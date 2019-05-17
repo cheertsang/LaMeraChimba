@@ -650,6 +650,12 @@ Lastly, we need to calculate the height of the solid PVC slab in which the diffu
 Therefore, the height of the PVC slab, $L_1$, is:
 
 $$L_1 = 10D_{diffuser}$$
+
+The following [Python code](https://github.com/cheertsang/LaMeraChimba/blob/master/code/python_function.py) outputs a variety of designs based on the following inputs:
+- sedimentation tank diameter (defaults to 90 inches)
+- sedimentation tank height (defaults to 98 inches)
+- upflow velocity (defaults to 1 mm/s)
+
 ```python
 #inputs: jet reverser radius (R_half_pipe), diameter of sed tank (diam), max headloss (max_HL), diffuser diameter (D_diff), upflow velocity (v_sed_up)
 #constants: Pi_diffuser_flow
@@ -657,14 +663,14 @@ $$L_1 = 10D_{diffuser}$$
 #find max spacing between diffusers (W)
 #w_max = 0.5*R_half_pipe
 
-diam = 90
+diam = 90*u.inch
 v_sed_up = 1*(u.mm/u.s)
 def Vel_sed_manifold_max(Pi_diffuser_flow, V_diffuser):
     return (V_diffuser * np.sqrt(2 * ((1-(Pi_diffuser_flow**2))/ ((Pi_diffuser_flow**2)+1))))
     diam = 90
     v_sed_up = 1*(u.mm/u.s)
 
-def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
+def sedCalc(diam=90*u.inch, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
             max_HL=1*u.centimeter, min_L2=1*u.inch, S=(3/8)*u.inch, T=2*u.mm,
             vc=(0.12*(u.mm/u.s)),plate_angle=60*u.deg, bottom_angle=50*u.deg):
 
@@ -693,15 +699,15 @@ def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
                 w_max2 = (diam_units+(L2_units/10)).to(u.inch)
                 w_max = min(w_max1, w_max2)
 
-                n_diffusers = round(((diam*u.inch)-2*u.inch)/w_max + 1)
+                n_diffusers = round(((diam)-2*u.inch)/w_max + 1)
                 v_diffuser_max = ((2*con.GRAVITY*max_HL)**(0.5)).to(u.m/u.s)
                 Q_diffusers = v_diffuser_max*pc.area_circle(diam_units)*n_diffusers
                 Pi_sed_manifold_flow = 0.8
                 v_manifold_max = Vel_sed_manifold_max(Pi_sed_manifold_flow, v_diffuser_max)
                 A_manifold = Q_diffusers/v_manifold_max
                 d_manifold = np.sqrt((4*A_manifold)/np.pi)
-                w_channel = (Q_diffusers/(v_sed_up*diam*u.inch)).to(u.meter)
-                n_channel = np.floor((diam*u.inch).to(u.meter)/w_channel)
+                w_channel = (Q_diffusers/(v_sed_up*diam)).to(u.meter)
+                n_channel = np.floor((diam).to(u.meter)/w_channel)
 
                 #find height of the PVC slab for diffuser holes
                 h_slab = diam_units*10#D_diff*10
@@ -752,9 +758,7 @@ def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
 sedCalc()
 ```
 
-[Great! Add some more detail on the design and cost comparison with the current PF300. For both designs calculate reasonable design flows assuming 1 mm/s upflow velocity in the floc blanket. Calculate or estimate the available height for the floc blanket assuming that there is 5 cm of clear water below the plate settlers. make sure to have the same capture velocity for the plate or tube settlers to make the comparison fair. Of course, we need to do research to figure out what capture velocity is actually optimal. ]:#
-
-The data files generated from this Python function are located on our [GitHub repository](https://github.com/cheertsang/LaMeraChimba). We then selected a few optimal designs from the ones generated, taking into consideration ease of fabrication.   
+The data files generated from this Python function are located on our [GitHub repository](https://github.com/cheertsang/LaMeraChimba/tree/master/code). We then selected a few optimal designs from the ones generated, taking into consideration ease of fabrication.   
 
 There was a total of 36 data sets, with each file named to describe the different combinations of jet reverser diameter ($D_{half pipe}$) and height between the bottom of the diffusers and the top of the jet reverser ($L_2$). Each file outputted a table with the following columns:
 - diffuser diameter
@@ -765,13 +769,15 @@ There was a total of 36 data sets, with each file named to describe the differen
 - diffuser slab height
 - diffuser spacing
 - number of diffusers
+- channel width
+- floc blanket height
 
 We then interpreted each data set for a variety of "failure modes" that would eliminate each output as a viable option:
 - **Number of channels:** This was the first-occurring and most easily observed failure mode. When the number of channels went to zero, we knew that this design option was not viable. We also arbitrarily defined an optimal number of channels to be between 2-4 channels due to the base geometry calculations above that showed that having only one channel in a tank this large would waste a lot of space. We also kept in mind that having too many channels would require a lot of material for pipes, as each channel would need an inlet manifold as well as a branching system to deliver water to each channel.
 
 - **Diffuser spacing:** We eliminated options where the diffuser spacing was less than the diffuser diameter (since we defined the diffuser spacing as from the center of one diffuser port to the next). A very small diffuser spacing also caused the number of diffusers to become ridiculously large, which would render the diffuser slab unnecessarily laborious to fabricate. We arbitrarily decided that a number of diffusers greater than 150 would be considered "ridiculously large."
 
-However, after a cursory glance at the datasets, we discovered that the jet reverser diameter did not matter at the $L_2$ distances we were considering. We selected a range between 3 to 6 inches as a "reasonable" distance between the bottom of the diffusers and the jet reverser. The output values (manifold diameter, number of channels, slab height, diffuser spacing, number of diffusers) were the same across all diameters of jet reversers (from 3 to 6 inches). There were only differences in the data after the number of channels had already gone to zero, at which point the data was insignificant. Thus, we only had to look through 6 data sets of varying $L_2$ heights.
+However, after a cursory glance at the datasets, we discovered that the jet reverser diameter did not matter at the $L_2$ distances we were considering. We selected a range between 3 to 6 inches as a "reasonable" distance between the bottom of the diffusers and the jet reverser. The output values (manifold diameter, number of channels, slab height, diffuser spacing, number of diffusers) were the same across all diameters of jet reversers (from 3 to 6 inches). There were only differences in the data after the number of channels had already gone to zero, at which point the data was insignificant. Thus, we only had to look through 6 data sets of varying $L_2$ heights. We later changed the code so that the function only outputs 6 data sets using the smallest diameter jet reverser (3 in).
 
 Using this method of narrowing down our viable options, we selected a number of practical designs. To narrow down our options even further, we calculated the actual spacing between the holes by taking the diffuser spacing and subtracting the diffuser diameter. We then eliminated options where the actual spacing was less than 1 cm, as this would be difficult to precisely drill.
 
@@ -811,6 +817,8 @@ For these calculations, the following values and design choices were used:
 
 **Figure 14:**  Schematic of the re-designed sedimentation tank. The floc blanket occupies the space between the tube settlers and the base plates, with a 5 cm clear water allowance in between.
 
+For the optimal manifold and diffuser design identified above, the channel width is 0.7605 meters, which allows for a floc blanket height of 1.786 meters.
+
 ## Design Comparison
 
 #### Cost Analysis
@@ -839,7 +847,9 @@ Some notes about the above price derivations:
 
 To get an idea of how cost effective our modified sedimentation tank is, we will use the 1L/s sed tank as a reference point. In total, the tank for the 1L/s costs 38,584 Lempiras, or in USD, \$1,569.27. In terms of cost per liter per second, this is \$1,569.27 per L/s. The total cost of our sedimentation tank is \$2,084.15. Given that our tank will yield roughly 4 L/s, this gives us a cost per liter per second of \$521.04. Assuming the pricing calculations were done correctly, this is roughly 3 times cheaper than the current 1L/s plant! This indicates that pursuing the construction of a slightly larger 4L/s plant would be more economical than relying on 4 1L/s plants working in parallel to achieve the same flow rate.
 
-[Good, but I think you missed the cost of several important items. Presumably inlet and outlet manifolds got larger in diameter and required longer pipes, the plate settlers need to be 4 times the area, and the floc hopper is likely much too small. Can you comment on what components resulted in the major cost savings?]
+[Great! Add some more detail on the design and cost comparison with the current PF300. For both designs calculate reasonable design flows assuming 1 mm/s upflow velocity in the floc blanket. Calculate or estimate the available height for the floc blanket assuming that there is 5 cm of clear water below the plate settlers. make sure to have the same capture velocity for the plate or tube settlers to make the comparison fair. Of course, we need to do research to figure out what capture velocity is actually optimal. ]:#
+
+[Good, but I think you missed the cost of several important items. Presumably inlet and outlet manifolds got larger in diameter and required longer pipes, the plate settlers need to be 4 times the area, and the floc hopper is likely much too small. Can you comment on what components resulted in the major cost savings?]:#
 
 An important thing to note in the above calculations is that neither price analysis includes labor costs. That being said, without having any concrete reference points, it is our guess that our sedimentation tank would be simpler to manufacture and thus result in potentially lower labor costs. After all, increased simplicity is one of our main design goals. Our honeycomb tube settlers, since they are one solid piece, should be easier to install and support. Furthermore, since our tank is one straight, solid piece, the only additional construction requirements are that the top be cut off. Besides that, the remaining components of our sed tank should be roughly equal in complexity when compared to those of the 1 L/s.
 

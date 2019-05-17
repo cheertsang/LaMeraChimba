@@ -15,14 +15,14 @@ import numpy as np
 #find max spacing between diffusers (W)
 #w_max = 0.5*R_half_pipe
 
-diam = 90
+diam = 90*u.inch
 v_sed_up = 1*(u.mm/u.s)
 def Vel_sed_manifold_max(Pi_diffuser_flow, V_diffuser):
     return (V_diffuser * np.sqrt(2 * ((1-(Pi_diffuser_flow**2))/ ((Pi_diffuser_flow**2)+1))))
     diam = 90
     v_sed_up = 1*(u.mm/u.s)
 
-def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
+def sedCalc(diam=90*u.inch, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
             max_HL=1*u.centimeter, min_L2=1*u.inch, S=(3/8)*u.inch, T=2*u.mm,
             vc=(0.12*(u.mm/u.s)),plate_angle=60*u.deg, bottom_angle=50*u.deg):
 
@@ -51,15 +51,15 @@ def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
                 w_max2 = (diam_units+(L2_units/10)).to(u.inch)
                 w_max = min(w_max1, w_max2)
 
-                n_diffusers = round(((diam*u.inch)-2*u.inch)/w_max + 1)
+                n_diffusers = round(((diam)-2*u.inch)/w_max + 1)
                 v_diffuser_max = ((2*con.GRAVITY*max_HL)**(0.5)).to(u.m/u.s)
                 Q_diffusers = v_diffuser_max*pc.area_circle(diam_units)*n_diffusers
                 Pi_sed_manifold_flow = 0.8
                 v_manifold_max = Vel_sed_manifold_max(Pi_sed_manifold_flow, v_diffuser_max)
                 A_manifold = Q_diffusers/v_manifold_max
                 d_manifold = np.sqrt((4*A_manifold)/np.pi)
-                w_channel = (Q_diffusers/(v_sed_up*diam*u.inch)).to(u.meter)
-                n_channel = np.floor((diam*u.inch).to(u.meter)/w_channel)
+                w_channel = (Q_diffusers/(v_sed_up*diam)).to(u.meter)
+                n_channel = np.floor((diam).to(u.meter)/w_channel)
 
                 #find height of the PVC slab for diffuser holes
                 h_slab = diam_units*10#D_diff*10
