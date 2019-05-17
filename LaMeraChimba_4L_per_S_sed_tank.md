@@ -107,7 +107,7 @@ import numpy as np
 
 ```
 
-The new sedimentation tank design will be based on the specifications of a [2500 gallon water storage tank](https://www.plastic-mart.com/product/8591/2500-gallon-enduraplas-vertical-water-tank), which will replace the two sections of corrugated PVC pipe. Several constraints went into deciding what the size of the tank would be. We wanted to make sure that if this plant would be relatively easy to transport by standard tractor trailers. Using the dimensions of conventional trail
+The new sedimentation tank design will be based on the specifications of a [2500 gallon water storage tank](https://www.plastic-mart.com/product/8591/2500-gallon-enduraplas-vertical-water-tank), which will replace the two sections of corrugated PVC pipe. Several constraints went into deciding what the size of the tank would be. We wanted to make sure that if this plant would be relatively easy to transport by standard tractor trailers. Using the dimensions of conventional trailer trucks we decided that its diameter should be no greater than the width of the cargo bay, 93 inches. Similarly, the height of the tank would be limited by the height of the cargo bay, which in a standard truck is 104 inches.
 
 (Figure 4).
 
