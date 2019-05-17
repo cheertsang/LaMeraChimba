@@ -6,8 +6,6 @@
 - Giancarlo Pacenza (gap75@cornell.edu)
 - Walter Guardado (wg249@cornell.edu)
 
-[It seems that you didn't respond to all of my comments. Best practice is to write a comment in response. Otherwise it isn't clear if we are communicating! Maybe I read this too fast. I didn't see how you selected the tank given the many tanks that are available. Explain your algorithm  for tank selection.  I'd recommend that you have a conversation with Paul Charles about how you might build the bottom geometry of this tank. I've shared the problem with Paul and so he has been thinking about options. Bottom geometry is fascinating for this scale of a project because although we are designing a smaller scale plant, the width of this tank is much larger than anything that we have ever built. Even Gracias has sed tanks that are only 1.08 m wide!  This means that the solution you develop for this tank might be applicable to retrofits of large rectangular sed tanks too. We've never thought about optimizing the width of the valleys in our sed tanks. Take the valley width to the extremes, identify what fails in both extremes, see if you can identify what might determine the optimal width. Remember that each valley needs a inlet manifold. Consider that we could design a inlet manifold system that starts with a trunk line and that has inlet manifold branches. I'm eager to see where this goes because with a bit of luck we will build this design this summer!]:#
-
 ## Introduction/Background
 
 The capital cost of a traditional AguaClara plant is fixed at roughly \$100,000, plus an additional \$8,000 per L/s of plant capacity ([Weber-Shirk, 2019](https://github.com/AguaClara/CEE4540_Master/raw/master/Lectures/In%20Class/AguaClara%20Ecosystem.pptx)). This cost is due to the fact that traditional AguaClara plants are constructed of mostly concrete, which require extensive excavation and on-site construction. The higher the plant capacity, the price per L/s decreases. Thus, traditional AguaClara plants are more cost-efficient for larger communities and often not feasible for serving smaller communities that require flow rates of less than 5 L/s. In order to serve this market of smaller communities, AguaClara designed the PF300, a pre-fabricated 1 L/s plant intended to serve a population of 300 ([Buhl et. al, 2016](https://confluence.cornell.edu/pages/viewpage.action?pageId=333352626&preview=/333352626/335435860/Prefab_Final_Report.pdf)).
@@ -49,9 +47,9 @@ To explore this alternative, we are looking to build a sedimentation tank out of
 The steps we will follow to create our final design are as follows:
 
 1. Calculate plant capacity
-2. Bottom geometry and jet reverser design
-3. Inlet manifold and diffuser specifications
-4. Plate settler specifications (dimensions, spacing)
+2. Plate settler specifications (dimensions, spacing)
+3. Bottom geometry design
+4. Inlet manifold and diffuser specifications
 
 ### Important Constraints
 
@@ -94,7 +92,6 @@ In order to evaluate which design would be more practical, the following indicat
 The following packages were used in the calculations below:
 
 ```python
-import aguaclara
 import aguaclara.core.physchem as pc
 import aguaclara.core.head_loss as minorloss
 import aguaclara.core.pipes as pipes
@@ -105,7 +102,6 @@ import aguaclara.core.utility as ut
 import numpy as np
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 #import aguaclara.design.sed_tank as st
 #there is an error in importing the sed tank package
 
@@ -123,7 +119,6 @@ The new sedimentation tank design will be based on the specifications of a [2500
 volume = (2500*u.gallon).to(u.L)
 diam = (90*u.inch).to(u.m)
 height = (98*u.inch).to(u.m)
-
 ```
 
 ### Plant Capacity
@@ -146,11 +141,100 @@ print('The plant capacity is ' + str(Q))
 ```
 **The plant capacity is 4.104 liter / second**
 
+### Plate Settler Specifications
+
+The design of the plate settlers depend on plate spacing, plate angle, plate length, and number of plates. In particular, we want to consider how, if at all, the new dimensions will deviate from the traditional AguaClara plant dimensions. Our plates will use the same thickness as those used by the traditional AguaClara plants (2 mm).
+
+The first dimension to consider is the spacing between plate settlers. The spacing is ultimately determined by the need to prevent floc rollup. As the plates come closer together, the velocity of water through the plates increases. This is due to the need to compensate for a smaller area and conserve flow. As the velocity of water near the plates increases, the flocs feel a stronger force combating the force of gravity. At the point where gravitational forces and fluid drag forces match, the floc will no longer have the tendency to slide down the plate settler. Unfortunately, we need the flocs to slide off the plate settler and be resuspended in the floc blanket. Therefore, assuming we want to maintain an upflow velocity of 1 mm/s, this point where gravitational forces equal fluid drag forces imposes a limit on how close we can allow the plate settlers to be.
+
+Following with the AguaClara design choices, we assume an upflow velocity of 1 mm/s and a capture velocity of 0.12 mm/s. Given these constraints, we know that we require a minimum plate spacing of 2.5 mm to prevent floc rollup. That being said, the AguaClara design opts for a spacing of 2.5 cm. As explained in the text, this is due to the variability in the type of incoming particle. The initial calculations were made for clay-based flocs; in reality, clay-based flocs are not the only flocs that should be expected. This is the reason for the 2.5 cm spacing. Since our own plant faces similar constraints, we will also opt for a spacing of 2.5 cm.
+
+The next dimension of the plate settlers we care about is the plate angle. In determining the angle, we want to make sure we have an angle that allows the flocs to slide down the plates. Currently, the AguaClara design sets the angle for the plates at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to keep the plate angle at 60 degrees. Furthermore, there is not a huge advantage to changing this design to 50 degrees.
+
+$$L = \frac{S*((v_{up}/v_c)-1)+(T*v_{up})/v_c}{cos(\alpha)sin(\alpha)}$$
+
+where:
+- $S$ is spacing between plates
+- $T$ is the thickness of the plates
+- $v_{up}$ is the upflow velocity
+- $v_c$ is the capture velocity
+- $\alpha$ is the angle of the plate settlers
+
+```python
+S = 2.5*u.cm
+T = 2 *u.mm
+vup = 1*u.mm/u.s
+vc = 0.12*u.mm/u.s
+alpha = 60*u.deg
+
+def L_sed_plate(S, vup, vc, T, angle):
+  return ((S*((vup/vc)-1)+T*(vup/vc))/(np.sin(angle)*np.cos(angle))).to(u.m)
+
+length = L_sed_plate(S, vup, vc, T, alpha)
+
+print("The plate settlers need to have a length of " + str(length))
+```
+
+**Applying the spacing, thickness, angle, and velocities from above, we get that the plate settlers need to be 0.4619 meters in length.**
+
+The final parameter to calculate is the number of plate settlers we can fit in the sedimentation tank. Given that an increase in plate settlers leads to an increase in performance, we want to find the maximum number of plate settlers we can use. To find this value, we apply the following equation:
+
+$$ n = floor(\frac{L_{cantilevered} * tan(\alpha)}{B} + 1) $$
+
+where:
+- $L_{cantilevered}$: the maximum length of sed plate sticking out past module pipes without any additional support
+- $B$: calculated as $S+T$.
+- $n$: the maximum number of plate settlers
+
+```python
+L = 20*u.cm
+B = S+T
+
+n = np.floor((L*np.tan(alpha))/B + 1)
+
+print('The maximum number of plate settlers per module is ' + str(n))
+```
+
+**The maximum number of plate settlers per module is 13 dimensionless**
+
+This gives us the number of plates per standard module in a standard AguaClara sedimentation tank. Given the module has a width of 40 inches, in order to adapt this calculation to our design, we will say that this gives the number of plates per 40 inches of width.
+
+
+### Honeycomb Tube Settler Specifications
+
+Another big design change we are making is a switch from the standard plate settlers to the proposed "honeycomb" settlers (Figure 4).
+
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/honeycomb.jpg?raw=True" >
+</p>
+<p align="center">
+
+**Figure 4:**  The honeycomb tube settlers can be custom-designed to a desired angle and diameter.
+
+Given this major choice, the additional dimensions we must consider are spacing, angle, and length. Based on manufacturing limits of the honeycomb settlers, we already have a predetermined spacing of 3/8". This is determined by the diameter of the holes in the honeycomb.
+
+The next design parameter to consider is the angle of the honeycomb settler. As with plate settlers, we want to make sure we have an angle that allows the flocs to slide down the plates. Current AguaClara plate settlers are designed to sit at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to use this angle for the honeycomb. Furhtermore, as with the plate settlers, there is not a huge advantage in changing this angle to 50 degrees.
+
+Following with AguaClara design choices, we assume an upflow velocity of 1 mm/s and a capture velocity of 0.12 mm/s. Now that we have the spacing between plates and the angle the plates will be set at, we need to calculate the length of the honeycomb settlers. However, this calculation becomes very complicated due to the "lost triangle" issue. In our previously submitted design, we were originally planning to implement plate settlers. However, after some consideration, we decided to implement the honeycomb settlers. Given this new circular architecture, the "lost triangle" becomes insignificant, and we can neglect this space in our calculations. Thus, the calculations will be carried out in the same method as above:
+
+```python
+S = 3/8*u.inch
+T = 2 *u.mm
+vup = 1*u.mm/u.s
+vc = 0.12*u.mm/u.s
+alpha = 60*u.deg
+
+length = L_sed_plate(S, vup, vc, T, alpha)
+
+print("The honeycomb tube settlers need to have a length of " + str(length))
+```
+The honeycomb tube settlers should have a length of 20 cm based on a spacing of 3/8 in (the diameter of each tube settler).
+
 ### Bottom Geometry
 
 #### Single Valley Design
 
-The bottom geometry and jet reverser are based on the current design. The base plates of the sedimentation tank are placed at a 60 degree angle from each other ([Herrera et. al, 2016](https://www.overleaf.com/read/cnkbrqcsxxfn)). The dimensions of the base plates are calculated using the equation for an ellipse:
+The bottom geometry was initially based on the current design. The base plates of the sedimentation tank are placed at a 60 degree angle from each other ([Herrera et. al, 2016](https://www.overleaf.com/read/cnkbrqcsxxfn)). The dimensions of the base plates are calculated using the equation for an ellipse:
 
 $$Minor Axis = Diameter $$
 $$\theta = 60 \degree$$
@@ -169,14 +253,14 @@ Since 60 degrees was somewhat arbitrarily chosen as a conservative estimate of t
 
 The volume of space underneath the base plates is considered "wasted" space because the higher the base plates extend, the less available volume there is for the floc blanket to form. We calculated the amount of space "wasted" for base plates at 50 versus 60 degrees by creating [OnShape models](https://cad.onshape.com/documents/83807153abc0891a5e2357b6/w/f49e8a4c6a84ac8d0bfbdd69/e/244a70d6ffc2d840528b962e) of the volume underneath the base plates.
 
-These models were created based on the diameter of the Rotoplast (90 in). The design accounted for the 3.5 diameter half-pipe jet reverser that will be placed between the base plates. Thus, 1.75 in (half of the diameter) was removed from the straight edge of each plate.
+These models were created based on the diameter of the Rotoplast (90 in). The design accounted for the 3.5 diameter half-pipe jet reverser that will be placed between the base plates. Thus, 1.75 in (half of the diameter) was removed from the straight edge of each plate (Figure 5).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/cylinder_cut.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/cylinder_cut.png?raw=True" height = 400>
 </p>
 <p align="center">
 
-**Figure 4:** An OnShape model of the volume underneath the base plates was created for both 50 and 60 degree angled base plates.
+**Figure 5:** An OnShape model of the volume underneath the base plates was created for both 50 and 60 degree angled base plates.
 
 Multiplying this volume by 2 allows us to obtain the volume underneath both base plates, which is the volume "wasted" in the sedimentation tank.
 
@@ -333,14 +417,14 @@ Using the minimum width of the diffusers, the total number of diffusers that fit
 
 ### Re-designed Diffusers and Inlet Manifold
 
-To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 5-6).
+To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 6-7).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/PVC_slab.png?raw=True">
 </p>
 <p align="center">
 
-**Figure 5:**  The proposed diffuser design consists of holes drilled into a PVC slab, which would simplify fabrication. OnShape model of new diffuser design can be found [here](https://cad.onshape.com/documents/2c3ac17948115b08908074a5/w/38e9cd8ec6dab336fd3923b7/e/3056b51c9f05981159d6e351).
+**Figure 6:**  The proposed diffuser design consists of holes drilled into a PVC slab, which would simplify fabrication. OnShape model of new diffuser design can be found [here](https://cad.onshape.com/documents/2c3ac17948115b08908074a5/w/38e9cd8ec6dab336fd3923b7/e/3056b51c9f05981159d6e351).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_holes.png?raw=True">
@@ -428,14 +512,14 @@ From this, we can calculate:
 - the width of each valley ($W_{valley}$)
 - and finally, the total number of valleys that fit into the tank ($n_{valleys}$)
 
-The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 7).
+The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 8).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_side.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_side.png?raw=True" height = 400>
 </p>
 <p align="center">
 
-**Figure 7:**  Front-view schematic of the inlet manifold, diffuser, and jet reverser. The flow expansion from the diffuser should not exceed the radius of the jet reverser half pipe.
+**Figure 8:**  Front-view schematic of the inlet manifold, diffuser, and jet reverser. The flow expansion from the diffuser should not exceed the radius of the jet reverser half pipe.
 
 
 The role of the half pipe is to resuspend flocs that slide down the slopes of the wall. If the jet entering the half pipe is greater than half of the diameter of the pipe then it will compromise the half pipe's capacity to reverse the direction of the flow and in effect resuspend the flocs. Since this would limit the absolute diameter of the diffuser holes, we will be testing a range of half pipe diameters in order to test out a broader range of diffuser diameters and see how that affects our tank geometries. We think this will help us understand the limits of our designs by seeing what fails at larger and larger diffuser diameters. We determined that we would should use a range of half pipe diameters based on the PVC pipes that are readily available in Honduras. From this we choose 3 inch diameter half pipes to be a good minimum size and 6 inch pipe as be a good maximum diameter. There are diameters of PVC pipe available in 0.5 inch increments from 3 inches to 6 inches which help us determine the total number of different half pipe diameters that we will test. An array of half pipe diameters from 3 inches to 6 inches at 0.5 inch increments will be made and looped through the function as an input.
@@ -445,16 +529,16 @@ $$3 inches \leq D_{halfpipe} \leq 6inches$$
 The second input of this function is the desired diffuser diameter. We have identified two constraints that determine the absolute minimum and maximum values of the diffuser diameter. The minimum diameter of the diffuser is somewhat arbitrary but rather important. In order to avoid clogging in the inlet manifold and diffusers, we must ensure that all, or at least most, of the particles that get past the flocculators are not larger than the minimum size of the holes in the diffusers. While we do not have a definitive value from which we can choose from, we are making an educated guess in saying that we would not want our diffuser diameter to be smaller than 3-5 mm. The maximum diameter for the diffuser is determined by two geometric parameters.
 
 
-Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers. We also take into account the flow expansion that occurs after the flow leaves the diffuser. The expansion ratio is flow We call this parameter $L_{2min}$. Our range of values for $D_{diffuser}$ is:
+Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers, we call this parameter $L_{2min}$. To do this correctly take into account the flow expansion that occurs after the flow leaves the diffuser. The expansion ratio used is $\frac{L}{W} = 10$. Therefore, our range of values for $D_{diffuser}$ are:
 
 $$3mm \leq D_{diffuser} \leq \frac{D_{halfpipe}}{2} - \frac{L_{2Min}}{10}$$
 
 <p align="center">
-  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_front.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_front.png?raw=True" height = 400>
 </p>
 <p align="center">
 
-**Figure 8:**  Side-view schematic of the inlet manifold, diffuser, and jet reverser. The flow paths out of the diffuser ports should converge to ensure a continuous flow distribution in the jet reverser.
+**Figure 9:**  Side-view schematic of the inlet manifold, diffuser, and jet reverser. The flow paths out of the diffuser ports should converge to ensure a continuous flow distribution in the jet reverser.
 
 The next important value that we needed to consider was the maximum $L_{2}$ that we wanted to have. In determining a maximum $L_{2}$ we could then loop through an array of $L_{2}$ values between our min and max. This is an important parameter because we must ensure that the flow from the diffusers converges before they reach the half pipe. This ensures an even flow distribution in the jet reverser. As we vary the distance between the top of the jet reverser and the bottom of the diffuser, $L_{2}$, the spacing, $W_{spacing}$, between each diffuser must also change to ensure that the flow converges before going through the jet reverser. Our team decided that it would probably be best to set the $L_{2Max}$ to about 6 inches. We reasoned that there could start to appear other failures in the design if we exceeded 6 inches of space between the top of the jet reverse and the bottom of the diffusers. Using the previously determined $L_{2Min}$ and this $L_{2Max}$ we narrowed our inputs to the following range:
 
@@ -468,43 +552,54 @@ $K$ is equal to 1 since the flow is going into a filled tank.
 
 $$V_{diffuserMax}=\sqrt{H_{Lmax}2g}$$
 
-After determining the bounds for our inputs we can then begin to calculate the parameters that are of interest to us. We would like our function to calculate the number of total valleys that it would need based on the provided inputs. To do this, we first need to find the appropriate spacing between each diffuser hole and use that to calculate the number of holes each manifold pipe can have.
+After determining the bounds for our inputs we can then begin to calculate the parameters that are of interest to us. We would like our function to calculate the number of total valleys that it would need based on the provided inputs. To do this, we first need to find the appropriate spacing between each diffuser hole and use that to calculate the number of holes each manifold pipe can have. W_{Spacing} is defined as the distance between the center of two adjacent diffusers. This distance will be a function of both the diffuser diameter and the width that the flow has expanded by. The following equation is used to calculate the spacing between diffusers.
 
-$$W_{Spacing}=D_{diffuser} + \frac{L_{2Min}}{10}$$
+$$W_{Spacing}=D_{diffuser} + \frac{L_{2}}{10}$$
 
-In order to do this we set a worse case scenario where the manifold is in the longest part of the tank, the middle, where the length from one end to the other is the diameter of the tank. The number of diffusers on this manifold would be the length of the manifold divided by the distance between the diffusers. However, we want to account for the fact that we should leave a bit of space at the ends of the diffuser to allow for proper installation. Taking this into account yields the following equation for the number of diffusers:
+Now that we have found the spacing between diffusers we can proceed to find the number of diffusers in the manifold. In order to do this we set a worse case scenario where the manifold is in the longest part of the tank, the middle, where the length from one end to the other is the diameter of the tank. The number of diffusers on this manifold would be the length of the manifold divided by the distance between the diffusers. However, we want to account for the fact that we should leave a bit of space at the ends of the diffuser to allow for proper installation. Taking this into account yields the following equation for the number of diffusers:
 
-$$n_{diffusers} = \frac{D_{tank}-L_{2min}}{W_{spacing}}$$
+$$n_{diffusers} = \frac{D_{tank}-2*L_{ends}}{W_{spacing}}$$
 
-Where $L_{2min} = 2 inches $. This is a value that was arbitrarily set based on our best judgement of what the minimum distance between the bottom of the diffuser and top of the half pipe should be to allow unobstructed passage of flocs.
+Where $L_{ends} = 1 inche $. This is a value that was arbitrarily set based on our best judgement of what the minimum amount of space at the ends of the manifold should be.
 
-Next, we could find the total flow rate through all the diffusers combined and calculate the required manifold size. To find the total flow rate we use the calculated maximum diffuser exit velocity and the total cross-sectional area of all the diffusers.
+Next, we could find the total flow rate through all of the diffusers and calculate the minimum valley width and also the required manifold size. To find the total flow rate we use the calculated maximum diffuser exit velocity and the total cross-sectional area of all the diffusers.
 
-$$Q_{diffuser}= V_{diffuserMax} \frac{\pi D_{diffuser}^2}{4} n_{diffusers}$$
+$$Q_{diffusers}= V_{diffuserMax} \frac{\pi D_{diffuser}^2}{4} n_{diffusers}$$
+
+For calculating the valley width we use the calculated flow rate through all the diffusers in one manifold and the desired sedimentation tank up flow velocity and apply them to the mass conservation equation:
+
+$$Q_{diffusers} = V_{SedUp} A_{valley}$$
+Since we are dealing with a circular tank the
+
 
 To find the minimum diameter of the manifold we need to find the maximum velocity that we can have in the manifold. This is critical in ensuring that we get a even flow distribution through all of the diffusers. The ratio of piezometric head in the first diffuser to that in the last diffuser is a dimensionless ratio that is called $\Pi_{diffuserflow}$.
 
 $$\Pi_{diffuserflow}= \sqrt{\frac{hl_{parallelPath} - \frac{\Delta H_{manifold}}{2}}{hl_{parallelPath}+\frac{\Delta H_{manifold}}{2}}}$$
 
-From before we know that the $\Delta H_{manifold}$ is determined by the minor loss experienced as the jet exits the diffuser.
+From before, we know that the $\Delta H_{manifold}$ is determined by the minor loss experienced as the jet exits the diffuser.
 
 $$ \Delta H_{manifold}= \frac{V_{diffuserMax}^2}{2g} $$
 
-From this we can simplify:
+From this, we can simplify:
 
 $$(\frac{1-\Pi_{diffuserflow}^2}{\Pi_{diffuserflow}^2 +1})hl_{ParallelPath}= \frac{V_{ManifoldMax}^2}{4g}$$
 
 where $hl_{ParallelPath}$ is:
 
-$$hl_{ParallelPath} = \frac{V_{diffuserMax^2}}{2g}$$
+$$hl_{ParallelPath} = \frac{V_{diffuserMax}^2}{2g}$$
 
-Simplifying:
-
-$$(\frac{1-\Pi_{diffuserflow}^2}{\Pi_{diffuserflow}^2 +1})hl_{ParallelPath}= \frac{V_{manifoldMax}^2}{4g}$$
-
-Now we can solve for the maximum velocity in the manifold:
+Now we can simplify and solve for the maximum velocity in the manifold:
 
 $$ V_{ManifoldMax}= V_{diffuserMax}\sqrt{2*\frac{1-\Pi_{diffuserflow}^2}{\Pi_{diffuserflow}^2 +1}}$$
+
+Employing conservation of mass and using the $V_{ManifoldMax}$ previously calculated, we can find the minimum diameter of pipe required for the manifold.
+
+$$Q_{diffusers} = Area_{manifold} * V_{ManifoldMax}$$
+
+$$ Area_{manifold} = \frac{\pi D_{manifold}^2}{4}$$
+
+$$D_{manifold} = \sqrt{\frac{4 Q_{diffusers}}{\pi V_{ManifoldMax}}} $$
+
 
 ```python
 #inputs: jet reverser radius (R_half_pipe), diameter of sed tank (diam), max headloss (max_HL), diffuser diameter (D_diff), upflow velocity (v_sed_up)
@@ -534,7 +629,7 @@ def sedCalc():
             L2_units = L2*u.inch
             L2_dict = {}
             min_L2 = 1*u.inch
-            upper = (rad_units - (min_L2/10)).to(u.mm)
+            upper = (rad_units - 0.1*1*u.inch).to(u.mm)
             first_row = 'diffuser diameter (mm), diffuser flow, manifold diameter, number channels, bottom height, slab height, diffuser spacing, number diffusers' + '\n'
             csv_lines = [first_row]
             for diam_d in range(3, max(3, int(upper.magnitude))):
@@ -592,8 +687,6 @@ def sedCalc():
                 f.write(line)
             f.close()
 
-
-
             key = 'L2 height: ' + str(L2)
             rad_dict[key] = L2_dict
         key = 'jet reverser radius: ' + str(rad_units)
@@ -601,87 +694,30 @@ def sedCalc():
     return return_dict
 sedCalc()
 ```
+
 [Great! Add some more detail on the design and cost comparison with the current PF300. For both designs calculate reasonable design flows assuming 1 mm/s upflow velocity in the floc blanket. Calculate or estimate the available height for the floc blanket assuming that there is 5 cm of clear water below the plate settlers. make sure to have the same capture velocity for the plate or tube settlers to make the comparison fair. Of course, we need to do research to figure out what capture velocity is actually optimal. ]:#
 
-### Plate Settler Specifications
+The data files generated from this Python function are located on our [GitHub repository](https://github.com/cheertsang/LaMeraChimba). We then selected a few optimal designs from the ones generated, taking into consideration ease of fabrication:  
 
-The next design parameters we have to consider are the dimensions of the plate settlers. These dimensions boil down to plate spacing, plate angle, plate length, and number of plates. In particular, we want to consider how, if at all, the new dimensions will deviate from the traditional AguaClara plant dimensions. Our plates will use the same thickness as those used by the traditional AguaClara plants (2 mm).
+**put some results**
 
-The first dimension to consider is the spacing between plate settlers. The spacing is ultimately determined by the need to prevent floc rollup. As the plates come closer together, the velocity of water through the plates increases. This is due to the need to compensate for a smaller area and conserve flow. As the velocity of water near the plates increases, the flocs feel a stronger force combating the force of gravity. At the point where gravitational forces and fluid drag forces match, the floc will no longer have the tendency to slide down the plate settler. Unfortunately, we need the flocs to slide off the plate settler and be resuspended in the floc blanket. Therefore, assuming we want to maintain an upflow velocity of 1 mm/s, this point where gravitational forces equal fluid drag forces imposes a limit on how close we can allow the plate settlers to be.
+got 36 data sets, each file name has a different combination of jet reverser diameter and L2 height
+outputted a table with diffuser diameter, diffuser flow rate, manifold diameter, number of channels, height btwn jet reverser and bottom of diffuser, diffuser slab height, diffuser spacing, number of diffusers
+failure modes
+- Number of channels
+- Diffuser spacing
+- Number of diffusers
 
-Following with the AguaClara design choices, we assume an upflow velocity of 1 mm/s and a capture velocity of 0.12 mm/s. Given these constraints, we know that we require a minimum plate spacing of 2.5 mm to prevent floc rollup. That being said, the AguaClara design opts for a spacing of 2.5 cm. As explained in the text, this is due to the variability in the type of incoming particle. The initial calculations were made for clay-based flocs; in reality, clay-based flocs are not the only flocs that should be expected. This is the reason for the 2.5 cm spacing. Since our own plant faces similar constraints, we will also opt for a spacing of 2.5 cm.
+however, going thru the data sets revealed that jet reverser diameter doesn't matter at the L2 (distance between bottom of diffuser and top of jet reverser) range we have chosen (3-6 inch)
+found this out because the output values were the same for all diameter jet reversers, only differed after number of channels went to zero, insignificant
 
-The next dimension of the plate settlers we care about is the plate angle. In determining the angle, we want to make sure we have an angle that allows the flocs to slide down the plates. Currently, the AguaClara design sets the angle for the plates at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to keep the plate angle at 60 degrees. Furthermore, there is not a huge advantage to changing this design to 50 degrees.
+### Floc Blanket Height
 
-$$L = \frac{S*((v_{up}/v_c)-1)+(T*v_{up})/v_c}{cos(\alpha)sin(\alpha)}$$
-
-where:
-- $S$ is spacing between plates
-- $T$ is the thickness of the plates
-- $v_{up}$ is the upflow velocity
-- $v_c$ is the capture velocity
-- $\alpha$ is the angle of the plate settlers
-
-```python
-S = 2.5*u.cm
-T = 2 *u.mm
-vup = 1*u.mm/u.s
-vc = 0.12*u.mm/u.s
-alpha = 60*u.deg
-
-def L_sed_plate(S, vup, vc, T, angle):
-  return ((S*((vup/vc)-1)+T*(vup/vc))/(np.sin(angle)*np.cos(angle))).to(u.m)
-
-length = L_sed_plate(S, vup, vc, T, alpha)
-
-print("The plate settlers need to have a length of " + str(length))
-```
-[This doesn't take into account the lost triangle. The lost triangles make the analysis more complicated and suggest using iteration to find the solution. This is because the plates have to get longer to account for plates that are lost in the triangle. The longer plates increase the size of the triangel and lose more plates. If you aren't careful the system blows up and there is not solution! (Ha... That is why the top of the PF300 is sloped!)]:#
-**Applying the spacing, thickness, angle, and velocities from above, we get that the plate settlers need to be 0.4619 meters in length.**
-
-The final parameter to calculate is the number of plate settlers we can fit in the sedimentation tank. Given that an increase in plate settlers leads to an increase in performance, we want to find the maximum number of plate settlers we can use. To find this value, we apply the following equation:
-
-$$ n = floor(\frac{L_{cantilevered} * tan(\alpha)}{B} + 1) $$
-
-where:
-- $L_{cantilevered}$: the maximum length of sed plate sticking out past module pipes without any additional support
-- $B$: calculated as $S+T$.
-- $n$: the maximum number of plate settlers
+The floc blanket height was calculated by taking the total sedimentation tank height and subtracting the height of the plate settlers, the height of the bottom geometry, and a 5 cm clear water allowance below the plate settlers.
 
 ```python
-L = 20*u.cm
-B = S+T
 
-n = np.floor((L*np.tan(alpha))/B + 1)
-
-print('The maximum number of plate settlers per module is ' + str(n))
 ```
-
-**The maximum number of plate settlers per module is 13 dimensionless**
-
-This gives us the number of plates per standard module in a standard AguaClara sedimentation tank. Given the module has a width of 40 inches, in order to adapt this calculation to our design, we will say that this gives the number of plates per 40 inches of width.
-
-
-### Honeycomb Tube Settler Specifications
-
-Another big design change we are making is a switch from the standard plate settlers to the honeycomb settlers. Given this major choice, the additional dimensions we must consider are spacing, angle, and length. Based on manufacturing limits of the honeycomb settlers, we already have a predetermined spacing of 3/8". This is determined by the diameter of the holes in the honeycomb.
-
-The next design parameter to consider is the angle of the honeycomb settler. As with plate settlers, we want to make sure we have an angle that allows the flocs to slide down the plates. Current AguaClara plate settlers are designed to sit at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to use this angle for the honeycomb. Furhtermore, as with the plate settlers, there is not a huge advantage in changing this angle to 50 degrees.
-
-Following with AguaClara design choices, we assume an upflow velocity of 1 mm/s and a capture velocity of 0.12 mm/s. Now that we have the spacing between plates and the angle the plates will be set at, we need to calculate the length of the honeycomb settlers. However, this calculation becomes very complicated due to the "lost triangle" issue. In our previously submitted design, we were originally planning to implement plate settlers. However, after some consideration, we decided to implement the honeycomb settlers. Given this new circular architecture, the "lost triangle" becomes insignificant, and we can neglect this space in our calculations. Thus, the calculations will be carried out in the same method as above:
-
-```python
-S = 3/8*u.inch
-T = 2 *u.mm
-vup = 1*u.mm/u.s
-vc = 0.12*u.mm/u.s
-alpha = 60*u.deg
-
-length = L_sed_plate(S, vup, vc, T, alpha)
-
-print("The honeycomb tube settlers need to have a length of " + str(length))
-```
-The honeycomb tube settlers should have a length of 20 cm based on a spacing of 3/8 in (the diameter of each tube settler).
 
 ## Design Comparison
 
