@@ -15,7 +15,7 @@ The capital cost of a traditional AguaClara plant is fixed at roughly \$100,000,
 AguaClara would like to expand its efforts in serving a range of smaller communities. Thus, we would like to design a range of designs that accommodate for flow rates of 1 to 5 L/s ("plantitas"). In particular, we will be focusing on the design of the sedimentation tank. The current design of the PF300 sedimentation tank consists of two sections of a cylindrical corrugated PVC pipe welded together at a 30 degree angle (Figure 1):
 
 <p align="center">
-  <img src="https://github.com/cheertsang/Personal/blob/master/IMG_3748.JPG?raw=True" height=500>
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/IMG_3748.JPG?raw=True" height=500>
 </p>
 <p align="center">
 
@@ -24,7 +24,7 @@ AguaClara would like to expand its efforts in serving a range of smaller communi
 Like the traditional AguaClara plants, the internal structure of the sedimentation tank consists of sedimentation plates, a floc hopper, an inlet manifold, outlet manifold, base plates, and a jet reverser (Figure 2).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/Personal/blob/master/sed_tank_schematic.png?raw=True" height=300>
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/sed_tank_schematic.png?raw=True" height=300>
 </p>
 <p align="center">
 
@@ -172,7 +172,7 @@ The volume of space underneath the base plates is considered "wasted" space beca
 These models were created based on the diameter of the Rotoplast (90 in). The design accounted for the 3.5 diameter half-pipe jet reverser that will be placed between the base plates. Thus, 1.75 in (half of the diameter) was removed from the straight edge of each plate.
 
 <p align="center">
-  <img src="https://github.com/cheertsang/Personal/blob/master/cylinder_cut.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/cylinder_cut.png?raw=True">
 </p>
 <p align="center">
 
@@ -336,14 +336,14 @@ Using the minimum width of the diffusers, the total number of diffusers that fit
 To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 5-6).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/Personal/blob/master/PVC_slab.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/PVC_slab.png?raw=True">
 </p>
 <p align="center">
 
 **Figure 5:**  The proposed diffuser design consists of holes drilled into a PVC slab, which would simplify fabrication. OnShape model of new diffuser design can be found [here](https://cad.onshape.com/documents/2c3ac17948115b08908074a5/w/38e9cd8ec6dab336fd3923b7/e/3056b51c9f05981159d6e351).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/Personal/blob/master/diffuser_holes.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_holes.png?raw=True">
 </p>
 <p align="center">
 
@@ -416,6 +416,7 @@ Given a diffuser diameter of 3 millimeters, the minimum inlet manifold nominal d
 In order to identify other limiting parameters and optimize the design of the sedimentation tank's bottom geometry, we have constructed a Python function that takes a number of key inputs and finds the required number of valleys needed to maintain the up flow velocity in the sedimentation tank. The inputs to the function are:
 - diffuser diameter ($D_{diffuser}$)
 - diameter of the half pipe used as the jet reverser ($D_{halfpipe}$)
+- length between the half pipe and the bottom of the diffuser ($L_{2}$)
 - diameter of sedimentation tank ($D_{tank}$)
 - desired maximum head loss from the diffuser jet ($H_{Lmax}$)
 
@@ -431,19 +432,27 @@ The first input, the radius of the jet reverser half pipe, is important in deter
 
 **(Image of the half pipe and diffusers would be helpful here)**.
 
+
+
 In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe. The role of the half pipe is to resuspend flocs that slide down the slopes of the wall. If the jet entering the half pipe is greater than half of the diameter of the pipe then it will compromise the half pipe's capacity to reverse the direction of the flow and in effect resuspend the flocs. Since this would limit the absolute diameter of the diffuser holes, we will be testing a range of half pipe diameters in order to test out a broader range of diffuser diameters and see how that affects our tank geometries. We think this will help us understand the limits of our designs by seeing what fails at larger and larger diffuser diameters. We determined that we would should use a range of half pipe diameters based on the PVC pipes that are readily available in Honduras. From this we choose 3 inch diameter half pipes to be a good minimum size and 6 inch pipe as be a good maximum diameter. There are diameters of PVC pipe available in 0.5 inch increments from 3 inches to 6 inches which help us determine the total number of different half pipe diameters that we will test. An array of half pipe diameters from 3 inches to 6 inches at 0.5 inch increments will be made and looped through the function as an input.
 
 $$3 inches \leq D_{halfpipe} \leq 6inches$$
 
-The second input of this function is the desired diffuser diameter. We have identified two constraints that determine the absolute minimum and maximum values of the diffuser diameter. The minimum diameter of the diffuser is somewhat arbitrary but rather important. In order to avoid clogging in the inlet manifold and diffusers, we must ensure that all, or at least most, of the particles that get past the flocculators are not larger than the minimum size of the holes in the diffusers. While we do not have a definitive value from which we can choose from, we are making an educated guess in saying that we would not want out diffuser diameter to be smaller than 3-5 mm. The maximum diameter for the diffuser is determined by two geometric parameters.
+The second input of this function is the desired diffuser diameter. We have identified two constraints that determine the absolute minimum and maximum values of the diffuser diameter. The minimum diameter of the diffuser is somewhat arbitrary but rather important. In order to avoid clogging in the inlet manifold and diffusers, we must ensure that all, or at least most, of the particles that get past the flocculators are not larger than the minimum size of the holes in the diffusers. While we do not have a definitive value from which we can choose from, we are making an educated guess in saying that we would not want our diffuser diameter to be smaller than 3-5 mm. The maximum diameter for the diffuser is determined by two geometric parameters.
 
 **(A figure here would be very helpful).**
 
-Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers. We call this parameter $L_{2}$. Our range of values for $D_{diffuser}$ is:
 
-$$3mm \leq D_{diffuser} \leq \frac{D_{halfpipe}}{2} - \frac{L_{2}}{10}$$
+Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers. We call this parameter $L_{2min}$. Our range of values for $D_{diffuser}$ is:
 
-The next important value that we needed to know was the spacing between each diffuser hole, $W_{spacing}$. In order to simplify this calculation, we determined that the spacing should be equal to the maximum width of the expanded jet $W_{expanded-max}$. Since $W_{expanded-max}$ cannot be larger than $\frac{D_{halfpipe}}{2}$, we can simply say that the $W_{spacing} = $\frac{D_{halfpipe}}{2}$. Although this works for our calculations, it can prove to be bit of an issue when dealing with larger diameter diffuser holes. The amount of space, and therefore material, between each hole decreases as the diameter of the diffuser increases, making it harder to make each hole and also leading to possible cracks between diffuser holes.
+$$3mm \leq D_{diffuser} \leq \frac{D_{halfpipe}}{2} - \frac{L_{2Min}}{10}$$
+
+The next important value that we needed to consider was the maximum $L_{2}$ that we wanted to have. In determining a maximum $L_{2}$ we could then loop through an array of $L_{2}$ values between our min and max. This is an important parameter because we must ensure that the flow from the diffusers converges before they reach the half pipe. This ensures an even flow distribution in the jet reverser. As we vary the distance between the top of the jet reverser and the bottom of the diffuser, $L_{2}$, the spacing, $W_{spacing}$, between each diffuser must also change to ensure that the flow converges before going through the jet reverser. Our team decided that it would probably be best to set the $L_{2Max}$ to about 6 inches. We reasoned that there could start to appear other failures in the design if we exceeded 6 inches of space between the top of the jet reverse and the top of the diffusers. Using the previously determined $L_{2Min}$ and this $L_{2Max}$ we narrowed our inputs to the following range:
+
+$$1inch \leq  L_{2} \leq 6inches$$
+
+
+ input was the spacing between each diffuser hole, $W_{spacing}$. In order to simplify this calculation, we determined that the spacing should be equal to the maximum width of the expanded jet $W_{expanded-max}$. Since $W_{expanded-max}$ cannot be larger than $\frac{D_{halfpipe}}{2}$, we can simply say that the $W_{spacing} = \frac{D_{halfpipe}}{2}$. Although this works for our calculations, it can prove to be bit of an issue when dealing with larger diameter diffuser holes. The amount of space, and therefore material, between each hole decreases as the diameter of the diffuser increases, making it harder to make each hole and also leading to possible cracks between diffuser holes.
 
 $$W_{expanded-max} - D_{diffuser} = W_{thickness}$$
 
