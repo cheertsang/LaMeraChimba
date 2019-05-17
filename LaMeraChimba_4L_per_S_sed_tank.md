@@ -430,7 +430,12 @@ From this, we can calculate:
 
 The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be
 
-**(Image of the half pipe and diffusers would be helpful here)**.
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_holes.png?raw=True">
+</p>
+<p align="center">
+
+**Figure 6:**  Top view of the proposed diffuser design.
 
 
 
