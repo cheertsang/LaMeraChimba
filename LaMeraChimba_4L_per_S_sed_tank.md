@@ -347,7 +347,7 @@ To simplify fabrication and allow for more freedom in selecting diffuser size, M
 </p>
 <p align="center">
 
-**Figure 6:**  Top view of the proposed diffuser design.
+**Figure 7:**  Top view of the proposed diffuser design.
 
 This design also allows the minimum diffuser diameter to not be constrained by the available mold sizes. Using the calculations above, we found the minimum width of the diffuser to be 2.26 mm, but as a safety factor, to ensure that the diffusers will not clog, we decided to use a minimum width of 3 mm for the diffuser hole size.
 
@@ -428,48 +428,51 @@ From this, we can calculate:
 - the width of each valley ($W_{valley}$)
 - and finally, the total number of valleys that fit into the tank ($n_{valleys}$)
 
-The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be
+The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 7).
 
 <p align="center">
-  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_holes.png?raw=True">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_side.png?raw=True">
 </p>
 <p align="center">
 
-**Figure 6:**  Top view of the proposed diffuser design.
+**Figure 7:**  Front-view schematic of the inlet manifold, diffuser, and jet reverser. The flow expansion from the diffuser should not exceed the radius of the jet reverser half pipe.
 
 
-
-In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe. The role of the half pipe is to resuspend flocs that slide down the slopes of the wall. If the jet entering the half pipe is greater than half of the diameter of the pipe then it will compromise the half pipe's capacity to reverse the direction of the flow and in effect resuspend the flocs. Since this would limit the absolute diameter of the diffuser holes, we will be testing a range of half pipe diameters in order to test out a broader range of diffuser diameters and see how that affects our tank geometries. We think this will help us understand the limits of our designs by seeing what fails at larger and larger diffuser diameters. We determined that we would should use a range of half pipe diameters based on the PVC pipes that are readily available in Honduras. From this we choose 3 inch diameter half pipes to be a good minimum size and 6 inch pipe as be a good maximum diameter. There are diameters of PVC pipe available in 0.5 inch increments from 3 inches to 6 inches which help us determine the total number of different half pipe diameters that we will test. An array of half pipe diameters from 3 inches to 6 inches at 0.5 inch increments will be made and looped through the function as an input.
+The role of the half pipe is to resuspend flocs that slide down the slopes of the wall. If the jet entering the half pipe is greater than half of the diameter of the pipe then it will compromise the half pipe's capacity to reverse the direction of the flow and in effect resuspend the flocs. Since this would limit the absolute diameter of the diffuser holes, we will be testing a range of half pipe diameters in order to test out a broader range of diffuser diameters and see how that affects our tank geometries. We think this will help us understand the limits of our designs by seeing what fails at larger and larger diffuser diameters. We determined that we would should use a range of half pipe diameters based on the PVC pipes that are readily available in Honduras. From this we choose 3 inch diameter half pipes to be a good minimum size and 6 inch pipe as be a good maximum diameter. There are diameters of PVC pipe available in 0.5 inch increments from 3 inches to 6 inches which help us determine the total number of different half pipe diameters that we will test. An array of half pipe diameters from 3 inches to 6 inches at 0.5 inch increments will be made and looped through the function as an input.
 
 $$3 inches \leq D_{halfpipe} \leq 6inches$$
 
 The second input of this function is the desired diffuser diameter. We have identified two constraints that determine the absolute minimum and maximum values of the diffuser diameter. The minimum diameter of the diffuser is somewhat arbitrary but rather important. In order to avoid clogging in the inlet manifold and diffusers, we must ensure that all, or at least most, of the particles that get past the flocculators are not larger than the minimum size of the holes in the diffusers. While we do not have a definitive value from which we can choose from, we are making an educated guess in saying that we would not want our diffuser diameter to be smaller than 3-5 mm. The maximum diameter for the diffuser is determined by two geometric parameters.
 
-**(A figure here would be very helpful).**
 
-
-Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers. We call this parameter $L_{2min}$. Our range of values for $D_{diffuser}$ is:
+Since we do not want the downwards flow from the diffuser to occupy more than half of the diameter of the half pipe, the diffuser diameter should be no greater than $\frac{D_{halfpipe}}{2}$. However, this assumes that the diffuser is directly on top of the half pipe. This is not a good design considering that flocs from one side of the half pipe would be obstructed. Therefore, we have also set an additional parameter to ensure that there is always a minimum amount of space between the bottom of the diffuser and the top of the half pipe to allow for unobstructed flow of flocs from both sides of the diffusers. We also take into account the flow expansion that accurs after the flow We call this parameter $L_{2min}$. Our range of values for $D_{diffuser}$ is:
 
 $$3mm \leq D_{diffuser} \leq \frac{D_{halfpipe}}{2} - \frac{L_{2Min}}{10}$$
 
-The next important value that we needed to consider was the maximum $L_{2}$ that we wanted to have. In determining a maximum $L_{2}$ we could then loop through an array of $L_{2}$ values between our min and max. This is an important parameter because we must ensure that the flow from the diffusers converges before they reach the half pipe. This ensures an even flow distribution in the jet reverser. As we vary the distance between the top of the jet reverser and the bottom of the diffuser, $L_{2}$, the spacing, $W_{spacing}$, between each diffuser must also change to ensure that the flow converges before going through the jet reverser. Our team decided that it would probably be best to set the $L_{2Max}$ to about 6 inches. We reasoned that there could start to appear other failures in the design if we exceeded 6 inches of space between the top of the jet reverse and the top of the diffusers. Using the previously determined $L_{2Min}$ and this $L_{2Max}$ we narrowed our inputs to the following range:
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_front.png?raw=True">
+</p>
+<p align="center">
+
+**Figure 8:**  Side-view schematic of the inlet manifold, diffuser, and jet reverser. The flow paths out of the diffuser ports should converge to ensure a continuous flow distribution in the jet reverser. 
+
+The next important value that we needed to consider was the maximum $L_{2}$ that we wanted to have. In determining a maximum $L_{2}$ we could then loop through an array of $L_{2}$ values between our min and max. This is an important parameter because we must ensure that the flow from the diffusers converges before they reach the half pipe. This ensures an even flow distribution in the jet reverser. As we vary the distance between the top of the jet reverser and the bottom of the diffuser, $L_{2}$, the spacing, $W_{spacing}$, between each diffuser must also change to ensure that the flow converges before going through the jet reverser. Our team decided that it would probably be best to set the $L_{2Max}$ to about 6 inches. We reasoned that there could start to appear other failures in the design if we exceeded 6 inches of space between the top of the jet reverse and the bottom of the diffusers. Using the previously determined $L_{2Min}$ and this $L_{2Max}$ we narrowed our inputs to the following range:
 
 $$1inch \leq  L_{2} \leq 6inches$$
 
-
- input was the spacing between each diffuser hole, $W_{spacing}$. In order to simplify this calculation, we determined that the spacing should be equal to the maximum width of the expanded jet $W_{expanded-max}$. Since $W_{expanded-max}$ cannot be larger than $\frac{D_{halfpipe}}{2}$, we can simply say that the $W_{spacing} = \frac{D_{halfpipe}}{2}$. Although this works for our calculations, it can prove to be bit of an issue when dealing with larger diameter diffuser holes. The amount of space, and therefore material, between each hole decreases as the diameter of the diffuser increases, making it harder to make each hole and also leading to possible cracks between diffuser holes.
-
-$$W_{expanded-max} - D_{diffuser} = W_{thickness}$$
-
-Next, we need to set the $H_{Lmax}$ that occurs as the water exits the diffuser into the sedimentation tank. This head loss is important because it allows for even distribution of flow within the manifold. AguaClara uses 1cm head loss through the diffusers in all their treatment plants and therefore we will also use that also. Additionally, $H_{Lmax}$ also sets the maximum velocity of the flow out of the diffuser. Using the minor loss equation we can calculate the $V_{diffuser-max}$ within our function:
+Next, we need to set the $H_{Lmax}$ that occurs as the water exits the diffuser into the sedimentation tank. This head loss is important because it allows for even distribution of flow within the manifold. AguaClara uses 1cm head loss through the diffusers in all their treatment plants and therefore we will also. Additionally, $H_{Lmax}$ also sets the maximum velocity of the flow out of the diffuser. Using the minor loss equation we can calculate the $V_{diffuser-max}$ with our function:
 
 $$H_{Lmax} = K\frac{V_{diffuserMax}^2}{2g} $$
 
 $K$ is equal to 1 since the flow is going into a filled tank.
 
-$$V_{diffuserMax}=\sqrt{\frac{H_{Lmax}2g}{K}}$$
+$$V_{diffuserMax}=\sqrt{H_{Lmax}2g}$$
 
-Our function then would need to calculate the number of diffusers in a single manifold. In order to do this we set a worse case scenario where the manifold is in the longest part of the tank, the middle, where the length from one end to the other is the diameter of the tank. The number of diffusers on this manifold would be the length of the manifold divided by the distance between the diffusers. However, we want to account for the fact that we should leave a bit of space at the ends of the diffuser to allow for proper installation. Taking this into account yields the following equation for the number of diffusers:
+After determining the bounds for our inputs we can then begin to calculate the parameters that are of interest to us. We would like our function to calculate the number of total valleys that it would need based on the provided inputs. To do this, we first need to find the appropriate spacing between each diffuser hole and use that to calculate the number of holes each manifold pipe can have.
+
+$$W_{Spacing}=D_{diffuser} + \frac{L_{2Min}}{10}$$
+
+In order to do this we set a worse case scenario where the manifold is in the longest part of the tank, the middle, where the length from one end to the other is the diameter of the tank. The number of diffusers on this manifold would be the length of the manifold divided by the distance between the diffusers. However, we want to account for the fact that we should leave a bit of space at the ends of the diffuser to allow for proper installation. Taking this into account yields the following equation for the number of diffusers:
 
 $$n_{diffusers} = \frac{D_{tank}-L_{2min}}{W_{spacing}}$$
 
