@@ -656,6 +656,8 @@ The following [Python code](https://github.com/cheertsang/LaMeraChimba/blob/mast
 - sedimentation tank height (defaults to 98 inches)
 - upflow velocity (defaults to 1 mm/s)
 
+**Note:** The following Python code must be run as a Python script in the terminal; it does not run properly within Markdown.
+
 ```python
 #inputs: jet reverser radius (R_half_pipe), diameter of sed tank (diam), max headloss (max_HL), diffuser diameter (D_diff), upflow velocity (v_sed_up)
 #constants: Pi_diffuser_flow
@@ -830,7 +832,7 @@ To determine the total cost, we used the price specifications for the 1 L/s plan
 
 | Component | Part | Unit Price | Quantity| Component Price|
 | --------- | ---- | ---------- | ------- | -------------- |
-|Rotoplast Tank |2710 Gallon Plastic Water Storage Tank | $1,129.09 |1|$1,129.09|
+|Rotoplast Tank |2500 Gallon Plastic Water Storage Tank | $1,000 |1|$1,000|
 |Honeycomb Tube Settlers |Plascore Honeycomb| $300 - 600  |1|$300-600|
 |Bottom Gemoetry (Plates and supports)|PVC Sheet, 48"x48"x1/4"|$87.04 |8|$696.30|
 |Inlet Manifold|PVC Tube 4"x20', RD-17|$61|1|$61|
@@ -859,8 +861,13 @@ Given the above factors, it seems like our proposed design is a very feasible ap
 
 The new design of the higher-capacity 4 L/s plantita appears to be more cost-effective than building 4 individual 1 L/s plants. However, the design difficulties and ease of fabrication should be taken into account.
 
-One important component of the sedimentation tank design that we did not consider is the the floc hopper. Future work should be done to find the optimal location for the floc hopper within the sedimentation tank and figure out the dimensions.
+tube settler - length
+base geometry - 3 valleys 
+inlet manifold, diffusers, jet reverser
 
+cost
+
+One important component of the sedimentation tank design that we did not consider is the the floc hopper. Future work should be done to find the optimal location for the floc hopper within the sedimentation tank and figure out the dimensions.
 
 ## References
 
