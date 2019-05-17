@@ -47,7 +47,7 @@ To explore this alternative, we are looking to build a sedimentation tank out of
 The steps we will follow to create our final design are as follows:
 
 1. Calculate plant capacity
-2. Plate settler specifications (dimensions, spacing)
+2. Plate settler specifications
 3. Bottom geometry design
 4. Inlet manifold and diffuser specifications
 
@@ -376,6 +376,7 @@ $$W_{effective}= \frac{\pi D}{4}$$
 Now, we can calculate the minimum diffuser width that we can use. That is described by using the following equation:
 $$W_{min}=\frac{V_{sed up}W_{effective}}{V_{diffmin}}$$
 
+The following calculations are for a 90 inch diameter sedimentation tank with 2 valleys.
 ```python
 max_HL = 1*u.centimeter
 max_diffuser_vel = ((2*con.GRAVITY*max_HL)**(0.5)).to(u.m/u.s)
@@ -420,7 +421,7 @@ print ('The diffusers have an outer width of '+str(w_diffuser_outside ))
 print('The diffusers have an inner length of '+str(interior_length_diffuser))
 print('The diffusers have an outer length of '+str(exterior_length_diffuser))
 
-# To determine the number of diffusers that can fit into the sedimentation tank we need to take the length of the manifold which is determined by the diameter of the tank and the number of valleys that are chosen. We will also take into account that there will be some small spacing between the diffusers during assembly.
+# To determine the number of diffusers that can fit into the sedimentation tank we need to take the length of the manifold which is determined by the diameter of the tank and the number of valleys that are chosen. We will also take into account that there will be some small spacing between the diffusers during assembly. Since we are doing 2 valleys, we simplified the calculation by adding the lengths of each valley into one long manifold for the purpose of the calculation.
 
 L_sed_upflow_max = (160*u.inch).to(u.m)
 
@@ -442,7 +443,7 @@ Using the minimum width of the diffusers, the total number of diffusers that fit
 
 ### Re-designed Diffusers and Inlet Manifold
 
-To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 9-10).
+To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled into it (Figure 9-10).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/PVC_slab.png?raw=True">
@@ -537,7 +538,7 @@ From this, we can calculate:
 - the width of each valley ($W_{valley}$)
 - and finally, the total number of valleys that fit into the tank ($n_{valleys}$)
 
-The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 11).
+The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet can be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 11).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_side.png?raw=True" height = 400>
@@ -780,8 +781,21 @@ We identified the option with a 7 mm diffuser diameter and 102 diffusers (**bold
 
 The floc blanket height was calculated by taking the total sedimentation tank height and subtracting the height of the plate settlers, the height of the bottom geometry, and a 5 cm clear water allowance below the plate settlers.
 
-```python
+For these calculations, the following values and design choices were used:
+- sedimentation tank height = 2.4892 meters
+- height of bottom geometry calculated using the channel width obtained from the optimal diffuser, jet reverser, and inlet manifold design identified above
+- 50 degree angled base plates
+- honeycomb tube settlers (height = 0.2 meters)
 
+```python
+H_sed = height
+H_settler = length
+H_clearwater = 5 * u.cm
+W_channel =
+H_channel = (W_channel/2)*np.tan(50)
+
+H_fb = H_sed - H_settler - H_clearwater - H_bot
+print('The floc blanket height is ' + str(H_fb))
 ```
 
 ## Design Comparison
@@ -822,10 +836,8 @@ Given the above factors, it seems like our proposed design is a very feasible ap
 
 The new design of the higher-capacity 4 L/s plantita appears to be more cost-effective than building 4 individual 1 L/s plants. However, the design difficulties and ease of fabrication should be taken into account.
 
-## Future Work
+One important component of the sedimentation tank design that we did not consider is the the floc hopper. Future work should be done to find the optimal location for the floc hopper within the sedimentation tank and figure out the dimensions.
 
-floc hopper
-[Start with the big picture. Can you build a single valley with jet reverser in this large diameter tank? How much of the tank volume will be lost beneath the sloped walls? Would it make sense to have multiple valleys? How would you set the optimal number of valleys? Take this to the extremes to see what fails. By the way, this is similar to the question of how would you convert a big traditional horizontal sed tank into an AguaClara sed tank? Where will the floc hopper be located? Before we go too far, what are the costs of the different sizes of tanks? Is the cost per L/s treated better for small diameter tanks or large diameter tanks? Or is the tank selection driven by the need to find a tank that has the right height?]:#
 
 ## References
 
