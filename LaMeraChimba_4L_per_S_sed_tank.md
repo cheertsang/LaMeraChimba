@@ -251,16 +251,25 @@ print('The distance from the center of the ellipse to the focus is ' + str(focus
 ```
 Since 60 degrees was somewhat arbitrarily chosen as a conservative estimate of the angle required to allow flocs to roll down into the jet reverser, we experimented with using a 50 degree angle for the base plates. To compare these two options, we compared the amount of volume we could save by using a 50 degree angle instead of a 60 degree angle.
 
-The volume of space underneath the base plates is considered "wasted" space because the higher the base plates extend, the less available volume there is for the floc blanket to form. We calculated the amount of space "wasted" for base plates at 50 versus 60 degrees by creating [OnShape models](https://cad.onshape.com/documents/83807153abc0891a5e2357b6/w/f49e8a4c6a84ac8d0bfbdd69/e/244a70d6ffc2d840528b962e) of the volume underneath the base plates.
+The volume of space underneath the base plates is considered "wasted" space because the higher the base plates extend, the less available volume there is for the floc blanket to form (Figure 5).
 
-These models were created based on the diameter of the Rotoplast (90 in). The design accounted for the 3.5 diameter half-pipe jet reverser that will be placed between the base plates. Thus, 1.75 in (half of the diameter) was removed from the straight edge of each plate (Figure 5).
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/wasted_space.JPG?raw=True" height = 400>
+</p>
+<p align="center">
+
+**Figure 5:** The "wasted" space underneath the base plates.
+
+We calculated the amount of space "wasted" for base plates at 50 versus 60 degrees by creating [OnShape models](https://cad.onshape.com/documents/83807153abc0891a5e2357b6/w/f49e8a4c6a84ac8d0bfbdd69/e/244a70d6ffc2d840528b962e) of the volume underneath the base plates.
+
+These models were created based on the diameter of the Rotoplast (90 in). The design accounted for the 3.5 diameter half-pipe jet reverser that will be placed between the base plates. Thus, 1.75 in (half of the diameter) was removed from the straight edge of each plate (Figure 6).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/cylinder_cut.png?raw=True" height = 400>
 </p>
 <p align="center">
 
-**Figure 5:** An OnShape model of the volume underneath the base plates was created for both 50 and 60 degree angled base plates.
+**Figure 6:** An OnShape model of the volume underneath the base plates was created for both 50 and 60 degree angled base plates.
 
 Multiplying this volume by 2 allows us to obtain the volume underneath both base plates, which is the volume "wasted" in the sedimentation tank.
 
@@ -318,18 +327,34 @@ $$ V_{wasted} = 2372 Liters $$
 This calculation was checked against the volume calculated by the OnShape model, and the volumes were accurately calculated. This calculated "volume wasted" is 23% of the total tank volume.
 
 **Tank with Two Valleys**
+Similar calculations were done to find the volume wasted with two valleys (Figure 7).
+
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/2_valleys.jpg?raw=True" height = 400>
+</p>
+<p align="center">
+
+**Figure 7:** Integration was used to calculate the volume of wasted space underneath two valleys.
 
 $$ V_{wasted} = 1440 Liters $$
 The "wasted" volume is 15% of the total tank volume.
 
 **Tank with Three Valleys**
+Similar calculations were done to find the volume wasted with three valleys (Figure 8).
+
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/3_valleys.jpg?raw=True" height = 400>
+</p>
+<p align="center">
+
+**Figure 8:** Integration was used to calculate the volume of wasted space underneath three valleys.
 
 $$ V_{wasted} = 967 Liters$$
 The "wasted" volume is 10% of the total tank volume.
 
-Thus, it is clear that using more valleys decreases the amount of "wasted" space underneath the base plates.
+Thus, it is clear that using more valleys decreases the amount of "wasted" space underneath the base plates. This however does not give us a clear idea of how many valleys we should have. To do this we must consider other variables in our design such as the inlet manifold and diffusers.
 
-### Inlet Manifold and Diffuser Specifications
+### Traditional AguaClara Inlet Manifold and Diffuser Specifications
 
 In order to begin to determine the size of the diffusers and the manifolds we first identified the relevant constraints for designing these components. First, the maximum head loss from the diffuser has been set to be 1 cm. This is due to the fact that there is a small energy requirement to keep the floc blanket suspended. Additionally, the head loss at the diffusers dampens the uneven flow distribution observed closer to the far end of the manifold. Using this, we can determine the maximum velocity at which water will leave the diffusers. We use the following head loss equation:
 
@@ -417,21 +442,21 @@ Using the minimum width of the diffusers, the total number of diffusers that fit
 
 ### Re-designed Diffusers and Inlet Manifold
 
-To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 6-7).
+To simplify fabrication and allow for more freedom in selecting diffuser size, Monroe proposed a new diffuser design using a PVC slab with diffuser holes drilled in (Figure 9-10).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/PVC_slab.png?raw=True">
 </p>
 <p align="center">
 
-**Figure 6:**  The proposed diffuser design consists of holes drilled into a PVC slab, which would simplify fabrication. OnShape model of new diffuser design can be found [here](https://cad.onshape.com/documents/2c3ac17948115b08908074a5/w/38e9cd8ec6dab336fd3923b7/e/3056b51c9f05981159d6e351).
+**Figure 9:**  The proposed diffuser design consists of holes drilled into a PVC slab, which would simplify fabrication. OnShape model of new diffuser design can be found [here](https://cad.onshape.com/documents/2c3ac17948115b08908074a5/w/38e9cd8ec6dab336fd3923b7/e/3056b51c9f05981159d6e351).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_holes.png?raw=True">
 </p>
 <p align="center">
 
-**Figure 7:**  Top view of the proposed diffuser design.
+**Figure 10:**  Top view of the proposed diffuser design.
 
 This design also allows the minimum diffuser diameter to not be constrained by the available mold sizes. Using the calculations above, we found the minimum width of the diffuser to be 2.26 mm, but as a safety factor, to ensure that the diffusers will not clog, we decided to use a minimum width of 3 mm for the diffuser hole size.
 
@@ -512,14 +537,14 @@ From this, we can calculate:
 - the width of each valley ($W_{valley}$)
 - and finally, the total number of valleys that fit into the tank ($n_{valleys}$)
 
-The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 8).
+The first input, the radius of the jet reverser half pipe, is important in determining what the maximum width of the expanded jet should be. In order for the jet reverser to work properly, we would want the flow from the diffuser to only hit the rightmost half (or leftmost, does not matter which side) of the half pipe (Figure 11).
 
 <p align="center">
   <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/diffuser_diagram_side.png?raw=True" height = 400>
 </p>
 <p align="center">
 
-**Figure 8:**  Front-view schematic of the inlet manifold, diffuser, and jet reverser. The flow expansion from the diffuser should not exceed the radius of the jet reverser half pipe.
+**Figure 11:**  Front-view schematic of the inlet manifold, diffuser, and jet reverser. The flow expansion from the diffuser should not exceed the radius of the jet reverser half pipe.
 
 
 The role of the half pipe is to resuspend flocs that slide down the slopes of the wall. If the jet entering the half pipe is greater than half of the diameter of the pipe then it will compromise the half pipe's capacity to reverse the direction of the flow and in effect resuspend the flocs. Since this would limit the absolute diameter of the diffuser holes, we will be testing a range of half pipe diameters in order to test out a broader range of diffuser diameters and see how that affects our tank geometries. We think this will help us understand the limits of our designs by seeing what fails at larger and larger diffuser diameters. We determined that we would should use a range of half pipe diameters based on the PVC pipes that are readily available in Honduras. From this we choose 3 inch diameter half pipes to be a good minimum size and 6 inch pipe as be a good maximum diameter. There are diameters of PVC pipe available in 0.5 inch increments from 3 inches to 6 inches which help us determine the total number of different half pipe diameters that we will test. An array of half pipe diameters from 3 inches to 6 inches at 0.5 inch increments will be made and looped through the function as an input.
@@ -538,7 +563,7 @@ $$3mm \leq D_{diffuser} \leq \frac{D_{halfpipe}}{2} - \frac{L_{2Min}}{10}$$
 </p>
 <p align="center">
 
-**Figure 9:**  Side-view schematic of the inlet manifold, diffuser, and jet reverser. The flow paths out of the diffuser ports should converge to ensure a continuous flow distribution in the jet reverser.
+**Figure 12:**  Side-view schematic of the inlet manifold, diffuser, and jet reverser. The flow paths out of the diffuser ports should converge to ensure a continuous flow distribution in the jet reverser.
 
 The next important value that we needed to consider was the maximum $L_{2}$ that we wanted to have. In determining a maximum $L_{2}$ we could then loop through an array of $L_{2}$ values between our min and max. This is an important parameter because we must ensure that the flow from the diffusers converges before they reach the half pipe. This ensures an even flow distribution in the jet reverser. As we vary the distance between the top of the jet reverser and the bottom of the diffuser, $L_{2}$, the spacing, $W_{spacing}$, between each diffuser must also change to ensure that the flow converges before going through the jet reverser. Our team decided that it would probably be best to set the $L_{2Max}$ to about 6 inches. We reasoned that there could start to appear other failures in the design if we exceeded 6 inches of space between the top of the jet reverse and the bottom of the diffusers. Using the previously determined $L_{2Min}$ and this $L_{2Max}$ we narrowed our inputs to the following range:
 
@@ -764,9 +789,9 @@ The floc blanket height was calculated by taking the total sedimentation tank he
 #### Cost Analysis
 In pursuing this new design, our goal is to create a plant that is simpler to construct than the current 1 L/s and gives an increased flow rate (roughly 4 L/s). Given that we are increasing the size of the sedimentation tank to achieve these benefits, we will necessarily incur an increased cost. Therefore, it is important to find what this increase in cost will be and determine whether or not the benefits justify the increase in cost.
 
-To determine the total cost, we used the price specifications for the 1 L/s plant to determine the cost per part. The prices are summarized in the table below:
+To determine the total cost, we used the price specifications for the 1 L/s plant to determine the cost per part. The prices are summarized in the table below (Table 2):
 
-**Table 1:** The estimated cost of materials required to build the redesigned 4 L/s plantita.
+**Table 2:** The estimated cost of materials required to build the redesigned 4 L/s plantita.
 
 | Component | Part | Unit Price | Quantity| Component Price|
 | --------- | ---- | ---------- | ------- | -------------- |
