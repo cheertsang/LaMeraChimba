@@ -665,12 +665,6 @@ The following [Python code](https://github.com/cheertsang/LaMeraChimba/blob/mast
 #find max spacing between diffusers (W)
 #w_max = 0.5*R_half_pipe
 
-diam = 90*u.inch
-v_sed_up = 1*(u.mm/u.s)
-def Vel_sed_manifold_max(Pi_diffuser_flow, V_diffuser):
-    return (V_diffuser * np.sqrt(2 * ((1-(Pi_diffuser_flow**2))/ ((Pi_diffuser_flow**2)+1))))
-    diam = 90
-    v_sed_up = 1*(u.mm/u.s)
 
 def sedCalc(diam=90*u.inch, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
             max_HL=1*u.centimeter, min_L2=1*u.inch, S=(3/8)*u.inch, T=2*u.mm,
@@ -826,7 +820,7 @@ For the optimal manifold and diffuser design identified above, the channel width
 #### Cost Analysis
 In pursuing this new design, our goal is to create a plant that is simpler to construct than the current 1 L/s and gives an increased flow rate (roughly 4 L/s). Given that we are increasing the size of the sedimentation tank to achieve these benefits, we will necessarily incur an increased cost. Therefore, it is important to find what this increase in cost will be and determine whether or not the benefits justify the increase in cost.
 
-To determine the total cost, we used the price specifications for the 1 L/s plant to determine the cost per part. The prices are summarized in the table below (Table 2):
+To determine the total cost, we used the [price specifications for the 1 L/s plant](https://github.com/cheertsang/LaMeraChimba/blob/master/Presupuesto%20planta%201Lps%20(solo%20materiales)%20(1).xls) to determine the cost per part. The prices are summarized in the table below (Table 2):
 
 **Table 2:** The estimated cost of materials required to build the redesigned 4 L/s plantita.
 
@@ -836,43 +830,35 @@ To determine the total cost, we used the price specifications for the 1 L/s plan
 |Honeycomb Tube Settlers |Plascore Honeycomb| $300 - 600  |1|$300-600|
 |Bottom Gemoetry (Plates and supports)|PVC Sheet, 48"x48"x1/4"|$87.04 |8|$696.30|
 |Inlet Manifold|PVC Tube 3"x20', RD-26|$22|1|$22|
-|Solid PVC Diffusers| PVC slab 3/4"x24"x48", |$133.86|0.5|$66.93|
+|Solid PVC Diffusers| PVC slab 3/4"x24"x48", |$133.86|0.625|$83.66|
 |Jet Reverser|3"x20', RD-26|$21.15|1|$21.15|
 |Inlet Manifold Cap|4" PVC Cap|$24.40|1|$24.40|
 |Floc Hopper|PVC Transparent Tube sch40 4"x4'|$152.52|1|$152.52|
-| **Total Price**   |   |   |   | **$2,583.30**|
+| **Total Price**   |   |   |   | **$2,600.03**|
 
 Some notes about the above price derivations:
 - We made a conservative estimate in saying that the bottom geometry would require 8 sheets of PVC. This was based on the fact that we needed to roughly span the diameter of the tank (90"). This would mean roughly 4 sheets for the bottom walls, with a conservative estimate of 4 more sheets for the underlying supports.
 - The pricing for the tank came from this link: https://www.plastic-mart.com/product/8591/2500-gallon-enduraplas-vertical-water-tank
 - The floc hopper consists of more than just the transparent tube on the outside. However, given that there would be left over PVC pipe from other parts of the sedimentation tank, we could use those for the other tubing of the floc hopper. Therefore, we say that the remaining cost of the floc hopper is "hidden" within the costs of the other components.
-- The price of the PVC slab for the new diffuser design was obtained from the United States Plastic Corp. We selected a [3/4" x 24" x 48" Gray PVC Sheet](https://www.usplastic.com/catalog/item.aspx?itemid=29587&catid=733) to allow for enough thickness for the diffuser hole (7 mm) and some space allowance (around 15 mm). Based on these dimensions, this would require 
+- The price of the PVC slab for the new diffuser design was obtained from the United States Plastic Corp. We selected a [3/4" x 24" x 48" Gray PVC Sheet](https://www.usplastic.com/catalog/item.aspx?itemid=29587&catid=733) to allow for enough thickness for the diffuser hole (7 mm) and some space allowance (around 15 mm). Based on these dimensions, one sheet would allow for 8 PVC slabs of a required height of 70 mm. However, we only require 5 slabs to give us the total length needed (222 inches). Thus, the cost for the PVC sheet was multiplied by 0.625.
 
-To get an idea of how cost effective our modified sedimentation tank is, we will use the 1L/s sed tank as a reference point. In total, the tank for the 1L/s costs 38,584 Lempiras, or in USD, \$1,569.27. In terms of cost per liter per second, this is \$1,569.27 per L/s. The total cost of our sedimentation tank is \$2,583.30. Given that our tank will yield roughly 4 L/s, this gives us a cost per liter per second of \$645.83. Assuming the pricing calculations were done correctly, this is roughly 2.5 times cheaper than the current 1L/s plant! This indicates that pursuing the construction of a slightly larger 4L/s plant would be more economical than relying on 4 1L/s plants working in parallel to achieve the same flow rate.
+To get an idea of how cost effective our modified sedimentation tank is, we will use the 1L/s sed tank as a reference point. In total, the tank for the 1L/s costs 38,584 Lempiras, or in USD, \$1,569.27. In terms of cost per liter per second, this is \$1,569.27 per L/s. The total cost of our sedimentation tank is \$2,600.03. Given that our tank will yield roughly 4.1 L/s, this gives us a cost per liter per second of \$634.15. Assuming the pricing calculations were done correctly, this is roughly 2.5 times cheaper than the current 1L/s plant! This indicates that pursuing the construction of a slightly larger 4L/s plant would be more economical than relying on 4 1L/s plants working in parallel to achieve the same flow rate.
 
-
-[Great! Add some more detail on the design and cost comparison with the current PF300. For both designs calculate reasonable design flows assuming 1 mm/s upflow velocity in the floc blanket. Calculate or estimate the available height for the floc blanket assuming that there is 5 cm of clear water below the plate settlers. make sure to have the same capture velocity for the plate or tube settlers to make the comparison fair. Of course, we need to do research to figure out what capture velocity is actually optimal. ]:#
 
 [Good, but I think you missed the cost of several important items. Presumably inlet and outlet manifolds got larger in diameter and required longer pipes, the plate settlers need to be 4 times the area, and the floc hopper is likely much too small. Can you comment on what components resulted in the major cost savings?]:#
 
 An important thing to note in the above calculations is that neither price analysis includes labor costs. That being said, without having any concrete reference points, it is our guess that our sedimentation tank would be simpler to manufacture and thus result in potentially lower labor costs. After all, increased simplicity is one of our main design goals. Our honeycomb tube settlers, since they are one solid piece, should be easier to install and support. Furthermore, since our tank is one straight, solid piece, the only additional construction requirements are that the top be cut off. Besides that, the remaining components of our sed tank should be roughly equal in complexity when compared to those of the 1 L/s.
 
-Given the above factors, it seems like our proposed design is a very feasible approach from an economic standpoint. However, the addition of PVC slabs in comparison to 1 inch PVC pipes as diffusers did increase the price. Additionally, the larger number of valleys also results in longer manifolds. This cost is actually nicely canceled out by the fact that the manifolds are smaller in diameter than that of the PF300. Lastly, this design has not yet begun to factor in the cost of adding a floc hopper. The overall design of the floc hopper remains to be explored in the future. This will surely pose an added cost to our design. We have also not accounted for the mechanisms by which each manifold pipe will be connected to a central inlet pipe. This would require a larger diameter pipe that would feed the sedimentation tank and then be distributed to the three manifolds. We also have not considered the exit launder in our calculation. This will need to be an extra pipe in our costs.
+Given the above factors, it seems like our proposed design is a very feasible approach from an economic standpoint. However, the addition of PVC slabs in comparison to 1 inch PVC pipes as diffusers did increase the price. Additionally, the larger number of valleys also results in longer manifolds. This cost is actually nicely canceled out by the fact that the manifolds are smaller in diameter than that of the PF300. Also, this design has not yet begun to factor in the cost of adding a floc hopper. The overall design of the floc hopper remains to be explored in the future and this will surely pose an added cost to our design. We have also not accounted for the mechanisms by which each manifold pipe will be connected to a central inlet pipe. This would require a larger diameter pipe that would feed the sedimentation tank and then be distributed to the three manifolds. Lastly, we have not considered the exit launder in our calculation and this will require an extra pipe in our costs.
 
 ## Conclusion
 
-The new design of the higher-capacity 4 L/s plantita appears to be more cost-effective than building 4 individual 1 L/s plants. However, the design difficulties and ease of fabrication should be taken into account.
+The re-designed 4 L/s plantita includes the following design changes:
+- **Honeycomb Tube Settlers:** The length of tube settlers required is 20 cm, with a diameter of 3/8 in each.
+- **Three Valley Base Geometry:** Using a three-valley base geometry design, we can reduce the amount of wasted space beneath the base plates, which will allow for more floc blanket height.
+- **Optimized Inlet Manifold and Diffuser:** The newly designed diffuser contains a PVC slab with holes drilled in. The optimal design consists of an inlet manifold of a 4 in diameter and diffuser holes of 7 mm diameter. The diffuser slab height will be 70 mm, and the diffuser holes will be spaced 22.24 mm apart, for a total of 102 diffuser holes. This design allows for a three-valley base geometry.
 
-tube settler - length
-base geometry - 3 valleys
-inlet manifold, diffusers, jet reverser
-
-honeycomb settlers
-base geometry
-diffuser (3/4" x 24" x 48" Gray PVC Sheet) most expensive part
-PVC sheets are rly expensive
-
-cost
+The new design of the higher-capacity 4 L/s plantita appears to be more cost-effective than building 4 individual 1 L/s plants. The new design costs \$645.83 per L/s, which is 2.5 times less expensive than the current 1 L/s plant design, which is \$1,569.27 per L/s. The most expensive components of the new design are the honeycomb tube settlers, at \$300-600, and the PVC sheets. Thus, the base geometry and diffuser slab will make up a significant portion of the plant cost. However, the ease of fabrication should be taken into account. The honeycomb tube settlers and PVC slab diffuser design will be significantly easier to fabricate than the current design, so it may be worth the added cost.
 
 One important component of the sedimentation tank design that we did not consider is the the floc hopper. Future work should be done to find the optimal location for the floc hopper within the sedimentation tank and figure out the dimensions.
 
