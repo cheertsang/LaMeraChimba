@@ -19,17 +19,18 @@ diam = 90
 v_sed_up = 1*(u.mm/u.s)
 def Vel_sed_manifold_max(Pi_diffuser_flow, V_diffuser):
     return (V_diffuser * np.sqrt(2 * ((1-(Pi_diffuser_flow**2))/ ((Pi_diffuser_flow**2)+1))))
+    diam = 90
+    v_sed_up = 1*(u.mm/u.s)
 
+def sedCalc(diam=90, tank_height= 98*u.inch, v_sed_up=(1*(u.mm/u.s)),
+            max_HL=1*u.centimeter, min_L2=1*u.inch, S=(3/8)*u.inch, T=2*u.mm,
+            vc=(0.12*(u.mm/u.s)),plate_angle=60*u.deg, bottom_angle=50*u.deg):
 
-def sedCalc():
     def L_sed_plate(S, vup, vc, T, angle):
         return ((S*((vup/vc)-1)+T*(vup/vc))/(np.sin(angle)*np.cos(angle))).to(u.m)
 
     def Vel_sed_manifold_max(Pi_diffuser_flow, V_diffuser):
         return (V_diffuser * np.sqrt(2 * ((1-(Pi_diffuser_flow**2))/ ((Pi_diffuser_flow**2)+1))))
-    diam = 90
-    v_sed_up = 1*(u.mm/u.s)
-    max_HL = 1*u.centimeter
     return_dict ={}
     Diameter_half_pipe = [3]#,3.5,4,4.5,5,6]
     for diam_half_pipe in Diameter_half_pipe:
@@ -38,7 +39,7 @@ def sedCalc():
         for L2 in range (1,7):#9):
             L2_units = L2*u.inch
             L2_dict = {}
-            min_L2 = 1*u.inch
+            #min_L2 = 1*u.inch
             upper = (rad_units - (min_L2/10)).to(u.mm)
             first_row = 'diffuser diameter (mm), diffuser flow, manifold diameter, number channels, bottom height, slab height, diffuser spacing, number diffusers, channel width, floc blanket space' + '\n'
             csv_lines = [first_row]
@@ -60,30 +61,24 @@ def sedCalc():
                 w_channel = (Q_diffusers/(v_sed_up*diam*u.inch)).to(u.meter)
                 n_channel = np.floor((diam*u.inch).to(u.meter)/w_channel)
 
-                    #find height of the PVC slab for diffuser holes
+                #find height of the PVC slab for diffuser holes
                 h_slab = diam_units*10#D_diff*10
 
-                    #find height from the jet exit to the half pipe
+                #find height from the jet exit to the half pipe
                 h_diff_jet = 10*(w_max-diam_units)#D_diff)
                 diff_flow=Q_diffusers.to(u.L/u.s)
-                manifold_diam = d_manifold#pipes.ND_SDR_available(d_manifold, 26) # put nominal diameter function here
+                manifold_diam = pipes.ND_SDR_available(d_manifold, 26)
                 channel_width = w_channel
                 num_channels = n_channel
                 slab_height = h_slab
                 height = h_diff_jet
 
-                S = 3/8*u.inch
-                T = 2 *u.mm
-                vup = 1*u.mm/u.s
-                vc = 0.12*u.mm/u.s
-                alpha = 60*u.deg
+                length = L_sed_plate(S, v_sed_up, vc, T, plate_angle)
 
-                length = L_sed_plate(S, vup, vc, T, alpha)
-                ang = 50*u.deg
-                peak = (w_channel/2)*np.tan(ang)
-                tank_height = 98*u.inch
+                peak = (w_channel/2)*np.tan(bottom_angle)
 
-                floc_blanket_space = (tank_height - (length + peak)).to(u.m)
+                clear_well_allowance = 5*u.cm
+                floc_blanket_space = (tank_height - (length + peak) - clear_well_allowance).to(u.m)
 
                 w_max = w_max.to(u.mm)
                 diam_dict['diffuser flow'] = str(diff_flow)
@@ -97,7 +92,7 @@ def sedCalc():
                 diam_dict['floc blanket space'] = str(floc_blanket_space)
                 key = 'diffuser diameter: ' + str(diam_d)
                 csv_line = str(diam_d) + ',' + str(diff_flow) + ',' + str(manifold_diam) +',' + str(num_channels.magnitude) + ',' + str(height) + ',' + str(slab_height) + ',' + str(w_max)+ ',' + str(n_diffusers) + ',' + str(w_channel) + ',' + str(floc_blanket_space) + '\n'
-                    csv_lines.append(csv_line)
+                csv_lines.append(csv_line)
 
                 L2_dict[key] = diam_dict
 
@@ -111,5 +106,5 @@ def sedCalc():
             rad_dict[key] = L2_dict
         key = 'jet reverser radius: ' + str(rad_units)
         return_dict[key] = rad_dict
-    return return_dict)
+    return return_dict
 sedCalc()

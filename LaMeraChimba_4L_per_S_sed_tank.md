@@ -796,7 +796,7 @@ We identified the option with a 7 mm diffuser diameter and 102 diffusers (**bold
 
 ### Floc Blanket Height
 
-The floc blanket height was calculated by taking the total sedimentation tank height and subtracting the height of the plate settlers, the height of the bottom geometry, and a 5 cm clear water allowance below the plate settlers.
+The floc blanket height was calculated by taking the total sedimentation tank height and subtracting the height of the plate settlers, the height of the bottom geometry, and a 5 cm clear water allowance below the plate settlers (Figure 14).
 
 For these calculations, the following values and design choices were used:
 - sedimentation tank height = 98 inches
@@ -804,6 +804,12 @@ For these calculations, the following values and design choices were used:
 - 50 degree angled base plates
 - honeycomb tube settlers (height = 0.2 meters)
 
+<p align="center">
+  <img src="https://github.com/cheertsang/LaMeraChimba/blob/master/Images/sed_tank.png?raw=True" height = 400>
+</p>
+<p align="center">
+
+**Figure 14:**  Schematic of the re-designed sedimentation tank. The floc blanket occupies the space between the tube settlers and the base plates, with a 5 cm clear water allowance in between.
 
 ## Design Comparison
 
