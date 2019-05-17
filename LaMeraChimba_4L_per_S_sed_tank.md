@@ -31,7 +31,7 @@ Like the traditional AguaClara plants, the internal structure of the sedimentati
 The specifications of the current PF300 plant design within this report were obtained from the [OnShape model](https://cad.onshape.com/documents/c2d1f86405270e814e117305/w/5a99281e258edb48b9d633f5/e/6bae3d77db5722cca1e4684c) created by AIDE Template.
 
 
-In the current PF300 plant design, there are two separate pieces of corrugated PVC pipe that needs to be welded together at a $30\degree$ angle (Figure 2). This is done in an effort to maximize the space within the tanks since the plate settlers in the top half of the tank are also set at $30\degree$. In the larger, built-in-place AguaClara plants, the lost area due to the plate settlers being at this angle must be accounted for in the capture velocity of the plate settlers. However, since the current PF300 design is angled this way, there is no need to account for the "lost triangle." While having the angled design makes the math easier, there are other fabrication issues with the design. It is rather labor-intensive and difficult to line up these pieces precisely and weld them together. Our partner in Honduras, Agua Para el Pueblo, has expressed its frustration with the assembly of the PF300. In response to this, we want to explore the option of altering the design of the sedimentation tank to a single larger diameter tank size to avoid the necessity of welding two sections PVC pipe. This would simplify the assembly of the plant and also allow us to design a plant with a larger flow rate. At larger capacities, the loss of a smaller percentage of the space due to the angled plate settlers is less of an issue than in the smaller design. In addition we will be addressing the question of whether it is more cost effective to build and operate multiple PF300 plants in parallel or instead use a single larger plant, in the range of 3 to 5 L/s.
+In the current PF300 plant design, there are two separate pieces of corrugated PVC pipe that needs to be welded together at a $30\degree$ angle (Figure 2). This is done in an effort to maximize the space within the tanks since the plate settlers in the top half of the tank are also set at $30\degree$. In the larger, built-in-place AguaClara plants, the lost area due to the plate settlers being at this angle must be accounted for in the capture velocity of the plate settlers. However, since the current PF300 design is angled this way, there is no need to account for the "lost triangle." While having the angled design makes the math easier, there are other fabrication issues with the design. It is rather labor-intensive and difficult to line up these pieces precisely and weld them together to make a water tight seal. Our partner in Honduras, Agua Para el Pueblo, has expressed its frustration with the assembly of the PF300. In response to this, we want to explore the option of altering the design of the sedimentation tank to a single larger diameter tank size to avoid the necessity of welding two sections PVC pipe. This would simplify the assembly of the plant and also allow us to design a plant with a larger flow rate. At larger capacities, the loss of a smaller percentage of the space due to the angled plate settlers is less of an issue than in the smaller design. In addition we will be addressing the question of whether it is more cost effective to build and operate multiple PF300 plants in parallel or instead use a single larger plant, in the range of 3 to 5 L/s.
 
 To explore this alternative, we are looking to build a sedimentation tank out of a pre-made Rotoplast tank (Figure 3).
 
@@ -113,7 +113,7 @@ The new sedimentation tank design will be based on the specifications of a [2500
 - Diameter: 90 in (2.286 m)
 - Height: 98 in (2.489 m)
 - Material: Polyethylene
-- Cost: $1,000
+- Cost: $1,000 USD
 
 ```python
 volume = (2500*u.gallon).to(u.L)
@@ -126,10 +126,10 @@ height = (98*u.inch).to(u.m)
 The plant capacity was calculated using the required upflow velocity in the sedimentation tank and the diameter of the tank.
 
 Using conservation of mass:
-$$ Q = vA $$
+$$ Q = V_{SedUp}A $$
 
 where:
-- $v$: upflow velocity required for floc blanket suspension
+- $V_{SedUp}$: upflow velocity required for floc blanket suspension
 - $A$: cross-sectional area of sedimentation tank
 
 ```python
@@ -213,7 +213,7 @@ Another big design change we are making is a switch from the standard plate sett
 
 Given this major choice, the additional dimensions we must consider are spacing, angle, and length. Based on manufacturing limits of the honeycomb settlers, we already have a predetermined spacing of 3/8". This is determined by the diameter of the holes in the honeycomb.
 
-The next design parameter to consider is the angle of the honeycomb settler. As with plate settlers, we want to make sure we have an angle that allows the flocs to slide down the plates. Current AguaClara plate settlers are designed to sit at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to use this angle for the honeycomb. Furhtermore, as with the plate settlers, there is not a huge advantage in changing this angle to 50 degrees.
+The next design parameter to consider is the angle of the honeycomb settler. As with plate settlers, we want to make sure we have an angle that allows the flocs to slide down the plates. Current AguaClara plate settlers are designed to sit at 60 degrees. Given that we could not find any explicit rational for this choice and given that it seems to be working well, we decided to use this angle for the honeycomb. Furthermore, as with the plate settlers, there is not a huge advantage in changing this angle to 50 degrees.
 
 Following with AguaClara design choices, we assume an upflow velocity of 1 mm/s and a capture velocity of 0.12 mm/s. Now that we have the spacing between plates and the angle the plates will be set at, we need to calculate the length of the honeycomb settlers. However, this calculation becomes very complicated due to the "lost triangle" issue. In our previously submitted design, we were originally planning to implement plate settlers. However, after some consideration, we decided to implement the honeycomb settlers. Given this new circular architecture, the "lost triangle" becomes insignificant, and we can neglect this space in our calculations. Thus, the calculations will be carried out in the same method as above:
 
@@ -569,10 +569,20 @@ $$Q_{diffusers}= V_{diffuserMax} \frac{\pi D_{diffuser}^2}{4} n_{diffusers}$$
 For calculating the valley width we use the calculated flow rate through all the diffusers in one manifold and the desired sedimentation tank up flow velocity and apply them to the mass conservation equation:
 
 $$Q_{diffusers} = V_{SedUp} A_{valley}$$
-Since we are dealing with a circular tank the
 
+In order to not get too overly complicated we ignored the fact that the tank is circular and applied the mass conservation equation as if this portion of the tank were square. This simplification will give us a smaller valley width than what actually would be needed to maintain a 1 mm/s up flow velocity. The larger the valleys gets the more inaccurate our simplification becomes. This is something that should and will be accounted for and fine tuned this summer. However, in the meantime, this simplification will suffice.
 
-To find the minimum diameter of the manifold we need to find the maximum velocity that we can have in the manifold. This is critical in ensuring that we get a even flow distribution through all of the diffusers. The ratio of piezometric head in the first diffuser to that in the last diffuser is a dimensionless ratio that is called $\Pi_{diffuserflow}$.
+In our simplification we characterize $A_{valley}$ as being equal to  $D_{tank} * W_{valley}$
+
+Solving for $W_{valley}$ gives:
+
+$W_{valley} = \frac{Q_{diffusers}}{ V_{SedUp}D_{tank}}$
+
+Finding the total number of valleys now is trivial:
+
+$$n_{valleys} = \frac{D_{tank}}{W_{valley}}$$
+
+Now, to find the minimum diameter of the manifold we need to find the maximum velocity that we can have in the manifold. This is critical in ensuring that we get a even flow distribution through all of the diffusers. The ratio of piezometric head in the first diffuser to that in the last diffuser is a dimensionless ratio that is called $\Pi_{diffuserflow}$.
 
 $$\Pi_{diffuserflow}= \sqrt{\frac{hl_{parallelPath} - \frac{\Delta H_{manifold}}{2}}{hl_{parallelPath}+\frac{\Delta H_{manifold}}{2}}}$$
 
@@ -600,7 +610,11 @@ $$ Area_{manifold} = \frac{\pi D_{manifold}^2}{4}$$
 
 $$D_{manifold} = \sqrt{\frac{4 Q_{diffusers}}{\pi V_{ManifoldMax}}} $$
 
+Lastly, we need to calculate the height of the solid PVC slab in which the diffuser holes will be drilled. We need to make sure that the slab is at least 10 times longer than its maximum width. This assures us that the flow has only a downward velocity vector.
 
+Therefore, the height of the PVC slab, $L_1$, is:
+
+$$L_1 = 10D_{diffuser}$$
 ```python
 #inputs: jet reverser radius (R_half_pipe), diameter of sed tank (diam), max headloss (max_HL), diffuser diameter (D_diff), upflow velocity (v_sed_up)
 #constants: Pi_diffuser_flow
@@ -697,19 +711,45 @@ sedCalc()
 
 [Great! Add some more detail on the design and cost comparison with the current PF300. For both designs calculate reasonable design flows assuming 1 mm/s upflow velocity in the floc blanket. Calculate or estimate the available height for the floc blanket assuming that there is 5 cm of clear water below the plate settlers. make sure to have the same capture velocity for the plate or tube settlers to make the comparison fair. Of course, we need to do research to figure out what capture velocity is actually optimal. ]:#
 
-The data files generated from this Python function are located on our [GitHub repository](https://github.com/cheertsang/LaMeraChimba). We then selected a few optimal designs from the ones generated, taking into consideration ease of fabrication:  
+The data files generated from this Python function are located on our [GitHub repository](https://github.com/cheertsang/LaMeraChimba). We then selected a few optimal designs from the ones generated, taking into consideration ease of fabrication.   
 
-**put some results**
+There was a total of 36 data sets, with each file named to describe the different combinations of jet reverser diameter ($D_{half pipe}$) and height between the bottom of the diffusers and the top of the jet reverser ($L_2$). Each file outputted a table with the following columns:
+- diffuser diameter
+- diffuser flow rate
+- manifold diameter
+- number of channels
+- height between jet reverser and bottom of diffuser
+- diffuser slab height
+- diffuser spacing
+- number of diffusers
 
-got 36 data sets, each file name has a different combination of jet reverser diameter and L2 height
-outputted a table with diffuser diameter, diffuser flow rate, manifold diameter, number of channels, height btwn jet reverser and bottom of diffuser, diffuser slab height, diffuser spacing, number of diffusers
-failure modes
-- Number of channels
-- Diffuser spacing
-- Number of diffusers
+We then interpreted each data set for a variety of "failure modes" that would eliminate each output as a viable option:
+- **Number of channels:** This was the first-occurring and most easily observed failure mode. When the number of channels went to zero, we knew that this design option was not viable. We also arbitrarily defined an optimal number of channels to be between 2-4 channels due to the base geometry calculations above that showed that having only one channel in a tank this large would waste a lot of space. We also kept in mind that having too many channels would require a lot of material for pipes, as each channel would need an inlet manifold as well as a branching system to deliver water to each channel.
 
-however, going thru the data sets revealed that jet reverser diameter doesn't matter at the L2 (distance between bottom of diffuser and top of jet reverser) range we have chosen (3-6 inch)
-found this out because the output values were the same for all diameter jet reversers, only differed after number of channels went to zero, insignificant
+- **Diffuser spacing:** We eliminated options where the diffuser spacing was less than the diffuser diameter (since we defined the diffuser spacing as from the center of one diffuser port to the next). A very small diffuser spacing also caused the number of diffusers to become ridiculously large, which would render the diffuser slab unnecessarily laborious to fabricate. We arbitrarily decided that a number of diffusers greater than 150 would be considered "ridiculously large."
+
+However, after a cursory glance at the datasets, we discovered that the jet reverser diameter did not matter at the $L_2$ distances we were considering. We selected a range between 3 to 6 inches as a "reasonable" distance between the bottom of the diffusers and the jet reverser. The output values (manifold diameter, number of channels, slab height, diffuser spacing, number of diffusers) were the same across all diameters of jet reversers (from 3 to 6 inches). There were only differences in the data after the number of channels had already gone to zero, at which point the data was insignificant. Thus, we only had to look through 6 data sets of varying $L_2$ heights.
+
+Using this method of narrowing down our viable options, we selected a number of practical designs. To narrow down our options even further, we calculated the actual spacing between the holes by taking the diffuser spacing and subtracting the diffuser diameter. We then eliminated options where the actual spacing was less than 1 cm, as this would be difficult to precisely drill.
+
+**Table 1:**  After eliminating non-viable designs, the following designs remained as viable options.
+
+| Diffuser Diameter (mm) | Diffuser Flow (L/s) | Manifold Diameter (in) | Number of Channels | Bottom Height (in) | Slab Height (mm) | Diffuser Spacing (mm) | Actual Spacing (mm) | Number of Diffusers |
+|------------------------|---------------------|------------------------|--------------------|--------------------|------------------|-----------------------|---------------------|---------------------|
+| 5                      | 1.287               | 3                      | 4                  | 4                  | 50               | 15.16                 | 10.16126            | 148                 |
+| 6                      | 1.741               | 4                      | 3                  | 4                  | 60               | 16.16                 | 10.15948            | 139                 |
+| 7                      | 2.233               | 4                      | 2                  | 4                  | 70               | 17.16                 | 10.16024            | 131                 |
+| 5                      | 1.104               | 3                      | 4                  | 5                  | 50               | 17.70                 | 12.70126            | 127                 |
+| 6                      | 1.515               | 3                      | 3                  | 5                  | 60               | 18.70                 | 12.69948            | 121                 |
+| 7                      | 1.943               | 4                      | 2                  | 5                  | 70               | 19.70                 | 12.70024            | 114                 |
+| 8                      | 2.426               | 4                      | 2                  | 5                  | 80               | 20.70                 | 12.701              | 109                 |
+| 6                      | 1.327               | 3                      | 3                  | 6                  | 60               | 21.24                 | 15.23948            | 106                 |
+| **7**                      | **1.738**               | **4**                      | **3**                  | **6**                  | **70**               | **22.24**                 | **15.24024**            | **102**                 |
+| 8                      | 2.159               | 4                      | 2                  | 6                  | 80               | 23.24                 | 15.241              | 97                  |
+
+We can narrow this list of design choices even further by keeping in mind that we overestimated number of valleys that would fit into the tank due to the area simplification described above. Thus, we can also eliminate options with 2 valleys.
+
+We identified the option with a 7 mm diffuser diameter and 102 diffusers (**bolded in Table 1**) as the best design in terms of fabrication ease because it had the least number of diffusers for a 3 channel design.
 
 ### Floc Blanket Height
 
